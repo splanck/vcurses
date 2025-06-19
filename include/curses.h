@@ -39,6 +39,35 @@ int wborder(WINDOW *win,
             char tl, char tr, char bl, char br);
 int box(WINDOW *win, char verch, char horch);
 
+/* --- Mouse support ---------------------------------------------------- */
+typedef unsigned long mmask_t;
+
+typedef struct {
+    short id;
+    int x, y, z;
+    mmask_t bstate;
+} MEVENT;
+
+#define BUTTON1_PRESSED    (1UL << 0)
+#define BUTTON1_RELEASED   (1UL << 1)
+#define BUTTON2_PRESSED    (1UL << 2)
+#define BUTTON2_RELEASED   (1UL << 3)
+#define BUTTON3_PRESSED    (1UL << 4)
+#define BUTTON3_RELEASED   (1UL << 5)
+#define BUTTON4_PRESSED    (1UL << 6)
+#define BUTTON4_RELEASED   (1UL << 7)
+#define BUTTON5_PRESSED    (1UL << 8)
+#define BUTTON5_RELEASED   (1UL << 9)
+#define BUTTON_SHIFT       (1UL << 10)
+#define BUTTON_CTRL        (1UL << 11)
+#define BUTTON_ALT         (1UL << 12)
+#define REPORT_MOUSE_POSITION (1UL << 13)
+
+#define KEY_MOUSE 0x200
+
+mmask_t mousemask(mmask_t newmask, mmask_t *oldmask);
+int getmouse(MEVENT *event);
+
 /* Special key definitions */
 #define KEY_UP     0x101
 #define KEY_DOWN   0x102
