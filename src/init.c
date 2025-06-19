@@ -8,12 +8,13 @@
 extern void _vc_resize_init(void);
 extern void _vc_resize_shutdown(void);
 
-static struct termios orig_termios;
+struct termios orig_termios;
+static struct termios saved_termios;
 static int term_initialized = 0;
 
 static void restore_terminal(void) {
     if (term_initialized) {
-        tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+        tcsetattr(STDIN_FILENO, TCSANOW, &saved_termios);
         term_initialized = 0;
     }
 }
@@ -26,15 +27,15 @@ static void handle_signal(int sig) {
 
 
 WINDOW *initscr(void) {
-    if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
+    if (tcgetattr(STDIN_FILENO, &saved_termios) == -1) {
         return NULL;
     }
 
-    struct termios raw = orig_termios;
-    raw.c_lflag &= ~(ECHO | ICANON);
-    raw.c_cc[VMIN] = 1;
-    raw.c_cc[VTIME] = 0;
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) == -1) {
+    orig_termios = saved_termios;
+    orig_termios.c_lflag &= ~(ECHO | ICANON);
+    orig_termios.c_cc[VMIN] = 1;
+    orig_termios.c_cc[VTIME] = 0;
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios) == -1) {
         return NULL;
     }
 
