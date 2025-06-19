@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 int vc_init(void);
+int initscr(void);
+int endwin(void);
 
 #ifdef __cplusplus
 }
