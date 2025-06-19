@@ -8,6 +8,10 @@ extern "C" {
 int vc_init(void);
 int initscr(void);
 int endwin(void);
+int clear(void);
+int clrtobot(void);
+int clrtoeol(void);
+int refresh(void);
 
 #ifdef __cplusplus
 }
