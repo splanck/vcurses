@@ -57,6 +57,30 @@ START_TEST(test_waddstr_null)
 }
 END_TEST
 
+START_TEST(test_waddch_updates_cursor)
+{
+    WINDOW *w = newwin(2, 2, 0, 0);
+    ck_assert_int_eq(waddch(w, 'x'), 0);
+    ck_assert_int_eq(w->curx, 1);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_move_and_wrappers)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(3, 3, 0, 0);
+    ck_assert_int_eq(move(1, 1), 0);
+    ck_assert_int_eq(stdscr->cury, 1);
+    ck_assert_int_eq(addch('a'), 0);
+    ck_assert_int_eq(stdscr->curx, 2);
+    ck_assert_int_eq(addstr("bc"), 0);
+    ck_assert_int_eq(stdscr->curx, 4);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 START_TEST(test_subwin_parent)
 {
     WINDOW *p = newwin(10, 20, 0, 0);
@@ -109,6 +133,8 @@ Suite *window_suite(void)
     tcase_add_test(tc, test_wmove_invalid);
     tcase_add_test(tc, test_waddstr_updates_cursor);
     tcase_add_test(tc, test_waddstr_null);
+    tcase_add_test(tc, test_waddch_updates_cursor);
+    tcase_add_test(tc, test_move_and_wrappers);
     tcase_add_test(tc, test_subwin_parent);
     tcase_add_test(tc, test_derwin_relative);
     tcase_add_test(tc, test_wcolor_set_pair);
