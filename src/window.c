@@ -16,6 +16,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->curx = 0;
     win->parent = NULL;
     win->keypad_mode = 0;
+    win->scroll = 0;
     win->attr = COLOR_PAIR(0);
     return win;
 }
@@ -59,6 +60,8 @@ int wmove(WINDOW *win, int y, int x) {
 }
 
 extern void _vc_screen_puts(int y, int x, const char *str, int attr);
+extern void _vc_screen_scroll_region(int top, int left, int height, int width,
+                                     int lines, int attr);
 
 int waddstr(WINDOW *win, const char *str) {
     if (!win || !str) {
@@ -76,4 +79,26 @@ int waddch(WINDOW *win, char ch) {
     buf[0] = ch;
     buf[1] = '\0';
     return waddstr(win, buf);
+}
+
+int scrollok(WINDOW *win, bool bf) {
+    if (!win)
+        return -1;
+    win->scroll = bf ? 1 : 0;
+    return 0;
+}
+
+int wscrl(WINDOW *win, int lines) {
+    if (!win)
+        return -1;
+    if (lines == 0)
+        return 0;
+    if (lines > 0) {
+        _vc_screen_scroll_region(win->begy, win->begx, win->maxy, win->maxx,
+                                 lines, win->attr);
+    } else {
+        /* downward scrolling not implemented */
+        return -1;
+    }
+    return 0;
 }
