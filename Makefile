@@ -3,7 +3,7 @@ AR ?= ar
 CFLAGS ?= -Iinclude -Wall -Wextra -fPIC
 BUILD := build
 LIB := libvcurses.a
-SRCS := src/vcurses.c src/curses.c src/windows.c
+SRCS := src/vcurses.c src/init.c src/curses.c src/windows.c
 OBJS := $(patsubst src/%.c,$(BUILD)/%.o,$(SRCS))
 
 # Unit test configuration
