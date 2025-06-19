@@ -103,6 +103,16 @@ int keypad(WINDOW *win, bool yes);
 
 When keypad mode is enabled, arrow keys, function keys and other special keys are returned as predefined `KEY_*` codes such as `KEY_UP` or `KEY_F1`.
 
+Input blocking behaviour can be tuned per window:
+
+```c
+int nodelay(WINDOW *win, bool bf);  /* true for non-blocking */
+int wtimeout(WINDOW *win, int delay); /* milliseconds, -1 blocking */
+int halfdelay(int tenths); /* sets stdscr timeout */
+```
+
+`nodelay()` is shorthand for `wtimeout(win, 0)`.  Positive values passed to `wtimeout()` specify the maximum wait time in milliseconds.  `halfdelay()` enables cbreak mode and waits up to the given tenths of a second when reading from `stdscr`.
+
 ### Attributes and colors
 
 Color and attribute management helpers:
