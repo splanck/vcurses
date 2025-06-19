@@ -68,7 +68,12 @@ int keypad(WINDOW *win, int bf);
 #define COLOR_PAIRS   256
 #define COLOR_PAIR(n)   ((n) << 8)
 #define PAIR_NUMBER(a)  (((a) >> 8) & 0xFF)
+
+/* Attribute masks */
+#define A_NORMAL      0x0000
 #define A_COLOR       0xFF00
+#define A_BOLD        0x010000
+#define A_UNDERLINE   0x020000
 
 int start_color(void);
 int init_pair(short pair, short fg, short bg);
