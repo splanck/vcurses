@@ -161,22 +161,37 @@ void _vc_screen_scroll_region(int top, int left, int height, int width,
                               int lines, int attr) {
     if (ensure_buffer() == -1)
         return;
-    if (lines <= 0 || height <= 0 || width <= 0)
+    if (lines == 0 || height <= 0 || width <= 0)
         return;
     if (top < 0 || left < 0 || top + height > buf_rows || left + width > buf_cols)
         return;
-    if (lines > height)
-        lines = height;
+    int count = lines > 0 ? lines : -lines;
+    if (count > height)
+        count = height;
 
-    for (int r = 0; r < height - lines; ++r) {
-        memcpy(&screen_buf[top + r][left],
-               &screen_buf[top + r + lines][left], width);
-        memcpy(&attr_buf[top + r][left],
-               &attr_buf[top + r + lines][left], sizeof(int) * width);
-    }
-    for (int r = height - lines; r < height; ++r) {
-        memset(&screen_buf[top + r][left], ' ', width);
-        for (int c = 0; c < width; ++c)
-            attr_buf[top + r][left + c] = attr;
+    if (lines > 0) {
+        for (int r = 0; r < height - count; ++r) {
+            memmove(&screen_buf[top + r][left],
+                    &screen_buf[top + r + count][left], width);
+            memmove(&attr_buf[top + r][left],
+                    &attr_buf[top + r + count][left], sizeof(int) * width);
+        }
+        for (int r = height - count; r < height; ++r) {
+            memset(&screen_buf[top + r][left], ' ', width);
+            for (int c = 0; c < width; ++c)
+                attr_buf[top + r][left + c] = attr;
+        }
+    } else {
+        for (int r = height - 1; r >= count; --r) {
+            memmove(&screen_buf[top + r][left],
+                    &screen_buf[top + r - count][left], width);
+            memmove(&attr_buf[top + r][left],
+                    &attr_buf[top + r - count][left], sizeof(int) * width);
+        }
+        for (int r = 0; r < count; ++r) {
+            memset(&screen_buf[top + r][left], ' ', width);
+            for (int c = 0; c < width; ++c)
+                attr_buf[top + r][left + c] = attr;
+        }
     }
 }

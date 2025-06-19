@@ -26,6 +26,14 @@ START_TEST(test_wscrl_basic)
 }
 END_TEST
 
+START_TEST(test_wscrl_downward)
+{
+    WINDOW *w = newwin(2,2,0,0);
+    ck_assert_int_eq(wscrl(w,-1), 0);
+    delwin(w);
+}
+END_TEST
+
 Suite *scroll_suite(void)
 {
     Suite *s = suite_create("scroll");
@@ -34,6 +42,7 @@ Suite *scroll_suite(void)
     tcase_add_test(tc, test_scrollok_flag);
     tcase_add_test(tc, test_wscrl_null);
     tcase_add_test(tc, test_wscrl_basic);
+    tcase_add_test(tc, test_wscrl_downward);
     suite_add_tcase(s, tc);
     return s;
 }
