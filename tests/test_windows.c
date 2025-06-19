@@ -4,6 +4,7 @@
 Suite *scroll_suite(void);
 Suite *input_suite(void);
 Suite *color_suite(void);
+Suite *pad_suite(void);
 
 START_TEST(test_newwin_basic)
 {
@@ -152,10 +153,12 @@ int main(void)
     Suite *s2 = scroll_suite();
     Suite *s3 = input_suite();
     Suite *s4 = color_suite();
+    Suite *s5 = pad_suite();
     SRunner *sr = srunner_create(s1);
     srunner_add_suite(sr, s2);
     srunner_add_suite(sr, s3);
     srunner_add_suite(sr, s4);
+    srunner_add_suite(sr, s5);
     srunner_run_all(sr, CK_ENV); // use CK_ENV to get TAP or not
     int nf = srunner_ntests_failed(sr);
     srunner_free(sr);

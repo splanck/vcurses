@@ -23,6 +23,11 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->scroll = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
+    win->is_pad = 0;
+    win->pad_y = 0;
+    win->pad_x = 0;
+    win->pad_buf = NULL;
+    win->pad_attr = NULL;
     _vc_register_window(win);
     return win;
 }
@@ -32,6 +37,18 @@ int delwin(WINDOW *win) {
         return -1;
     }
     _vc_unregister_window(win);
+    if (win->is_pad && !win->parent) {
+        if (win->pad_buf) {
+            for (int r = 0; r < win->maxy; ++r)
+                free(win->pad_buf[r]);
+            free(win->pad_buf);
+        }
+        if (win->pad_attr) {
+            for (int r = 0; r < win->maxy; ++r)
+                free(win->pad_attr[r]);
+            free(win->pad_attr);
+        }
+    }
     free(win);
     return 0;
 }
@@ -54,6 +71,112 @@ WINDOW *derwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x) {
     return subwin(orig, nlines, ncols, orig->begy + begin_y, orig->begx + begin_x);
 }
 
+WINDOW *newpad(int nlines, int ncols) {
+    WINDOW *win = calloc(1, sizeof(WINDOW));
+    if (!win)
+        return NULL;
+    win->begy = 0;
+    win->begx = 0;
+    win->maxy = nlines;
+    win->maxx = ncols;
+    win->cury = 0;
+    win->curx = 0;
+    win->parent = NULL;
+    win->keypad_mode = 0;
+    win->scroll = 0;
+    win->delay = -1;
+    win->attr = COLOR_PAIR(0);
+    win->is_pad = 1;
+    win->pad_y = 0;
+    win->pad_x = 0;
+    win->pad_buf = malloc(sizeof(char *) * nlines);
+    win->pad_attr = malloc(sizeof(int *) * nlines);
+    if (!win->pad_buf || !win->pad_attr) {
+        free(win->pad_buf);
+        free(win->pad_attr);
+        free(win);
+        return NULL;
+    }
+    for (int r = 0; r < nlines; ++r) {
+        win->pad_buf[r] = malloc(ncols);
+        win->pad_attr[r] = malloc(sizeof(int) * ncols);
+        if (!win->pad_buf[r] || !win->pad_attr[r]) {
+            for (int i = 0; i <= r; ++i) {
+                if (i < r) {
+                    free(win->pad_buf[i]);
+                    free(win->pad_attr[i]);
+                }
+            }
+            free(win->pad_buf);
+            free(win->pad_attr);
+            free(win);
+            return NULL;
+        }
+        memset(win->pad_buf[r], ' ', ncols);
+        for (int c = 0; c < ncols; ++c)
+            win->pad_attr[r][c] = win->attr;
+    }
+    _vc_register_window(win);
+    return win;
+}
+
+WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x) {
+    if (!orig || !orig->is_pad)
+        return NULL;
+    WINDOW *win = calloc(1, sizeof(WINDOW));
+    if (!win)
+        return NULL;
+    win->begy = 0;
+    win->begx = 0;
+    win->maxy = nlines;
+    win->maxx = ncols;
+    win->cury = 0;
+    win->curx = 0;
+    win->parent = orig;
+    win->keypad_mode = 0;
+    win->scroll = 0;
+    win->delay = -1;
+    win->attr = COLOR_PAIR(0);
+    win->is_pad = 1;
+    win->pad_y = orig->pad_y + begin_y;
+    win->pad_x = orig->pad_x + begin_x;
+    win->pad_buf = orig->pad_buf;
+    win->pad_attr = orig->pad_attr;
+    _vc_register_window(win);
+    return win;
+}
+
+static WINDOW *pad_root(WINDOW *pad) {
+    WINDOW *r = pad;
+    while (r->parent && r->parent->is_pad)
+        r = r->parent;
+    return r;
+}
+
+int prefresh(WINDOW *pad, int pminrow, int pmincol,
+             int sminrow, int smincol, int smaxrow, int smaxcol) {
+    if (!pad || !pad->is_pad)
+        return -1;
+    WINDOW *root = pad_root(pad);
+    int rows = smaxrow - sminrow + 1;
+    int cols = smaxcol - smincol + 1;
+    for (int r = 0; r < rows; ++r) {
+        if (pminrow + r >= pad->maxy)
+            break;
+        for (int c = 0; c < cols; ++c) {
+            if (pmincol + c >= pad->maxx)
+                break;
+            int rr = pad->pad_y + pminrow + r;
+            int cc = pad->pad_x + pmincol + c;
+            char ch = root->pad_buf[rr][cc];
+            int attr = root->pad_attr[rr][cc];
+            char buf[2] = { ch, 0 };
+            _vc_screen_puts(sminrow + r, smincol + c, buf, attr);
+        }
+    }
+    return 0;
+}
+
 int wmove(WINDOW *win, int y, int x) {
     if (!win) {
         return -1;
@@ -74,10 +197,22 @@ int waddstr(WINDOW *win, const char *str) {
     if (!win || !str) {
         return -1;
     }
-    int row = win->begy + win->cury;
-    int col = win->begx + win->curx;
-    _vc_screen_puts(row, col, str, win->attr);
-    win->curx += strlen(str);
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int row = win->pad_y + win->cury;
+        int col = win->pad_x + win->curx;
+        for (const char *p = str; *p && row < root->maxy && col < root->maxx; ++p) {
+            root->pad_buf[row][col] = *p;
+            root->pad_attr[row][col] = win->attr;
+            col++;
+        }
+        win->curx += strlen(str);
+    } else {
+        int row = win->begy + win->cury;
+        int col = win->begx + win->curx;
+        _vc_screen_puts(row, col, str, win->attr);
+        win->curx += strlen(str);
+    }
     return 0;
 }
 
@@ -131,7 +266,6 @@ int wborder(WINDOW *win,
 
     char buf[2] = {0, 0};
 
-    /* top and bottom */
     for (int x = 0; x < width; ++x) {
         if (x == 0)
             buf[0] = tl;
@@ -139,7 +273,15 @@ int wborder(WINDOW *win,
             buf[0] = tr;
         else
             buf[0] = ts;
-        _vc_screen_puts(win->begy, win->begx + x, buf, win->attr);
+        if (win->is_pad) {
+            WINDOW *root = pad_root(win);
+            int rr = win->pad_y;
+            int cc = win->pad_x + x;
+            root->pad_buf[rr][cc] = buf[0];
+            root->pad_attr[rr][cc] = win->attr;
+        } else {
+            _vc_screen_puts(win->begy, win->begx + x, buf, win->attr);
+        }
 
         if (height > 1) {
             if (x == 0)
@@ -148,19 +290,42 @@ int wborder(WINDOW *win,
                 buf[0] = br;
             else
                 buf[0] = bs;
-            _vc_screen_puts(win->begy + height - 1, win->begx + x,
-                            buf, win->attr);
+            if (win->is_pad) {
+                WINDOW *root = pad_root(win);
+                int rr = win->pad_y + height - 1;
+                int cc = win->pad_x + x;
+                root->pad_buf[rr][cc] = buf[0];
+                root->pad_attr[rr][cc] = win->attr;
+            } else {
+                _vc_screen_puts(win->begy + height - 1, win->begx + x,
+                                buf, win->attr);
+            }
         }
     }
 
-    /* left and right sides */
     for (int y = 1; y < height - 1; ++y) {
         buf[0] = ls;
-        _vc_screen_puts(win->begy + y, win->begx, buf, win->attr);
+        if (win->is_pad) {
+            WINDOW *root = pad_root(win);
+            int rr = win->pad_y + y;
+            int cc = win->pad_x;
+            root->pad_buf[rr][cc] = buf[0];
+            root->pad_attr[rr][cc] = win->attr;
+        } else {
+            _vc_screen_puts(win->begy + y, win->begx, buf, win->attr);
+        }
         if (width > 1) {
             buf[0] = rs;
-            _vc_screen_puts(win->begy + y, win->begx + width - 1,
-                            buf, win->attr);
+            if (win->is_pad) {
+                WINDOW *root = pad_root(win);
+                int rr = win->pad_y + y;
+                int cc = win->pad_x + width - 1;
+                root->pad_buf[rr][cc] = buf[0];
+                root->pad_attr[rr][cc] = win->attr;
+            } else {
+                _vc_screen_puts(win->begy + y, win->begx + width - 1,
+                                buf, win->attr);
+            }
         }
     }
 
