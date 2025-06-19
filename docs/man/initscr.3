@@ -1,0 +1,21 @@
+.TH initscr 3 "2025-06-19" "vcurses" "vcurses Library"
+.SH NAME
+initscr \- initialize the vcurses library
+.SH SYNOPSIS
+.nf
+#include <vcurses.h>
+.sp
+.BI "WINDOW *initscr(void);"
+.fi
+.SH DESCRIPTION
+The \fBinitscr()\fP function initializes the terminal for use with
+vcurses. It switches the terminal into raw mode, disables echoing
+and allocates the global \fIstdscr\fP window structure. Signal
+handlers are installed to restore the terminal on exit and to handle
+window size changes.
+.SH RETURN VALUE
+On success a pointer to the \fIstdscr\fP window is returned. On
+failure \fBinitscr()\fP returns NULL and the terminal state is
+unchanged.
+.SH SEE ALSO
+endwin(3), getch(3)

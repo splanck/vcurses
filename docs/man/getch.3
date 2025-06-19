@@ -1,0 +1,18 @@
+.TH getch 3 "2025-06-19" "vcurses" "vcurses Library"
+.SH NAME
+getch \- read a character from the standard screen
+.SH SYNOPSIS
+.nf
+#include <curses.h>
+.sp
+.BI "int getch(void);"
+.fi
+.SH DESCRIPTION
+The \fBgetch()\fP function reads the next character from \fIstdscr\fP.
+If keypad mode is enabled on \fIstdscr\fP, special keys are returned as
+their predefined KEY_* codes.
+.SH RETURN VALUE
+On success the read character or key code is returned. On error
+-1 is returned.
+.SH SEE ALSO
+wgetch(3), keypad(3), initscr(3)
