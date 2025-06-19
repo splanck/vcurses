@@ -91,3 +91,20 @@ int addstr(const char *str) {
 int addch(char ch) {
     return waddch(stdscr, ch);
 }
+
+static int _cursor_state = 1;
+
+int curs_set(int visibility) {
+    int prev = _cursor_state;
+    if (visibility == 0) {
+        fputs("\x1b[?25l", stdout);
+        _cursor_state = 0;
+    } else if (visibility == 1) {
+        fputs("\x1b[?25h", stdout);
+        _cursor_state = 1;
+    } else {
+        return -1;
+    }
+    fflush(stdout);
+    return prev;
+}
