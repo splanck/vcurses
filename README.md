@@ -22,3 +22,12 @@ make clean
 
 Man pages for the core API are available in `docs/man`. Useful entries
 include [initscr.3](docs/man/initscr.3) and [getch.3](docs/man/getch.3).
+
+## Color support
+
+`vcurses` provides eight basic colors named `COLOR_BLACK` through
+`COLOR_WHITE`. Call `start_color()` once after initializing the library to
+enable color handling and define up to 256 color pairs with
+`init_pair(pair, fg, bg)`. The macro `COLOR_PAIR(n)` can then be used with
+`attron`, `attroff`, or `attrset` (or their window variants) to apply a
+defined pair.
