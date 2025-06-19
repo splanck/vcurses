@@ -58,15 +58,15 @@ int wmove(WINDOW *win, int y, int x) {
     return 0;
 }
 
+extern void _vc_screen_puts(int y, int x, const char *str);
+
 int waddstr(WINDOW *win, const char *str) {
     if (!win || !str) {
         return -1;
     }
     int row = win->begy + win->cury;
     int col = win->begx + win->curx;
-    printf("\x1b[%d;%dH", row + 1, col + 1);
-    _vcurses_apply_attr(win->attr);
-    printf("%s", str);
+    _vc_screen_puts(row, col, str);
     win->curx += strlen(str);
     return 0;
 }

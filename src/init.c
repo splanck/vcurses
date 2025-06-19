@@ -80,6 +80,8 @@ WINDOW *initscr(void) {
 int endwin(void) {
     restore_terminal();
     signal(SIGWINCH, SIG_DFL);
+    extern void _vc_screen_free(void);
+    _vc_screen_free();
     free(stdscr);
     stdscr = NULL;
     return 0;
