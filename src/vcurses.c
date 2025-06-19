@@ -1,5 +1,4 @@
 #include "vcurses.h"
 
-int vc_init(void) {
-    return 0;
-}
+/* Additional library-wide functions will be implemented here. */
+
