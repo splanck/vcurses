@@ -1,9 +1,9 @@
-#include "vcurses.h"
+#include "curses.h"
 #include <unistd.h>
 #include <stdio.h>
 
 int main(void) {
-    if (initscr() == -1) {
+    if (initscr() == NULL) {
         perror("initscr");
         return 1;
     }
