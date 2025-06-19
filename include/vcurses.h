@@ -5,8 +5,10 @@
 extern "C" {
 #endif
 
+typedef struct window WINDOW;
+
 int vc_init(void);
-int initscr(void);
+WINDOW *initscr(void);
 int endwin(void);
 int clear(void);
 int clrtobot(void);

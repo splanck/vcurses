@@ -1,11 +1,13 @@
-#include "vcurses.h"
+#include "curses.h"
 #include <termios.h>
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 
 static struct termios orig_termios;
 static int term_initialized = 0;
+WINDOW *stdscr = NULL;
 
 static void restore_terminal(void) {
     if (term_initialized) {
@@ -20,9 +22,9 @@ static void handle_signal(int sig) {
     raise(sig);
 }
 
-int initscr(void) {
+WINDOW *initscr(void) {
     if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
-        return -1;
+        return NULL;
     }
 
     struct termios raw = orig_termios;
@@ -30,7 +32,7 @@ int initscr(void) {
     raw.c_cc[VMIN] = 1;
     raw.c_cc[VTIME] = 0;
     if (tcsetattr(STDIN_FILENO, TCSANOW, &raw) == -1) {
-        return -1;
+        return NULL;
     }
 
     term_initialized = 1;
@@ -40,10 +42,31 @@ int initscr(void) {
     signal(SIGTERM, handle_signal);
     signal(SIGHUP, handle_signal);
 
-    return 0;
+    struct winsize ws;
+    int rows = 24, cols = 80;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0) {
+        rows = ws.ws_row;
+        cols = ws.ws_col;
+    }
+
+    stdscr = calloc(1, sizeof(WINDOW));
+    if (!stdscr) {
+        return NULL;
+    }
+    stdscr->begy = 0;
+    stdscr->begx = 0;
+    stdscr->maxy = rows;
+    stdscr->maxx = cols;
+    stdscr->cury = 0;
+    stdscr->curx = 0;
+    stdscr->parent = NULL;
+
+    return stdscr;
 }
 
 int endwin(void) {
     restore_terminal();
+    free(stdscr);
+    stdscr = NULL;
     return 0;
 }
