@@ -51,6 +51,8 @@ int echo(void);
 int noecho(void);
 int cbreak(void);
 int nocbreak(void);
+int raw(void);
+int noraw(void);
 
 #ifdef __cplusplus
 }

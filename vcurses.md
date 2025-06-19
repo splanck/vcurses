@@ -56,9 +56,13 @@ echo();    /* enable input echo */
 noecho();  /* disable echo */
 cbreak();  /* disable line buffering */
 nocbreak();
+raw();     /* disable signals and line buffering */
+noraw();
 ```
 
-`initscr()` sets raw mode with no echo by default. Use these helpers to adjust the behaviour.
+`initscr()` sets raw mode with no echo by default. Use `noraw()` to
+restore normal signal processing and `raw()` to enable it again. The
+`cbreak()` and `nocbreak()` helpers only toggle line buffering.
 
 ### Windows
 
