@@ -2,6 +2,7 @@
 #define CURSES_H
 
 #include "vcurses.h"
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,7 @@ int wmove(WINDOW *win, int y, int x);
 int waddstr(WINDOW *win, const char *str);
 int wgetch(WINDOW *win);
 int getch(void);
-int keypad(WINDOW *win, int bf);
+int keypad(WINDOW *win, bool yes);
 
 /* Special key definitions */
 #define KEY_UP     0x101
