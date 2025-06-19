@@ -69,6 +69,8 @@ int box(WINDOW *win, char verch, char horch);
 
 int start_color(void);
 int init_pair(short pair, short fg, short bg);
+int pair_content(short pair, short *fg, short *bg);
+int color_content(short color, short *r, short *g, short *b);
 
 int attron(int attrs);
 int attroff(int attrs);

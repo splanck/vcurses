@@ -30,4 +30,6 @@ include [initscr.3](docs/man/initscr.3) and [getch.3](docs/man/getch.3).
 enable color handling and define up to 256 color pairs with
 `init_pair(pair, fg, bg)`. The macro `COLOR_PAIR(n)` can then be used with
 `attron`, `attroff`, or `attrset` (or their window variants) to apply a
-defined pair.
+defined pair. Use `pair_content(pair, &fg, &bg)` to query a pair and
+`color_content(color, &r, &g, &b)` to retrieve the RGB components of a
+color.

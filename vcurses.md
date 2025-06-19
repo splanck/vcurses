@@ -110,6 +110,8 @@ Color and attribute management helpers:
 ```c
 int start_color(void);
 int init_pair(short pair, short fg, short bg);
+int pair_content(short pair, short *fg, short *bg);
+int color_content(short color, short *r, short *g, short *b);
 int attron(int attrs);  int wattron(WINDOW *win, int attrs);
 int attroff(int attrs); int wattroff(WINDOW *win, int attrs);
 int attrset(int attrs); int wattrset(WINDOW *win, int attrs);
@@ -138,7 +140,7 @@ The header defines color constants and attribute masks:
 #define A_UNDERLINE   0x020000
 ```
 
-Use `start_color()` once after initialization, define pairs with `init_pair()` and apply them with the attribute functions above.
+Use `start_color()` once after initialization, define pairs with `init_pair()` and query them with `pair_content()`. The RGB components of the basic colors can be obtained using `color_content()`. Apply pairs with the attribute functions above.
 
 ### Cursor visibility
 
