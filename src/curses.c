@@ -212,19 +212,25 @@ int init_pair(short pair, short fg, short bg) {
 }
 
 static void apply_attr(int attr) {
+    /* reset attributes */
+    printf("\x1b[0m");
+
     if (attr & A_COLOR) {
         short pair = PAIR_NUMBER(attr);
         if (pair >= 0 && pair < MAX_COLOR_PAIRS && colors_initialized) {
             short fg = color_pairs[pair].fg;
             short bg = color_pairs[pair].bg;
             printf("\x1b[%d;%dm", 30 + fg, 40 + bg);
-            return;
         }
-    }
-    /* default colors */
-    if (colors_initialized) {
+    } else if (colors_initialized) {
+        /* default colors */
         printf("\x1b[%d;%dm", 30 + color_pairs[0].fg, 40 + color_pairs[0].bg);
     }
+
+    if (attr & A_BOLD)
+        printf("\x1b[1m");
+    if (attr & A_UNDERLINE)
+        printf("\x1b[4m");
 }
 
 void _vcurses_apply_attr(int attr) {
