@@ -13,6 +13,7 @@ typedef struct window {
     int cury, curx; /* cursor position */
     struct window *parent; /* parent for subwindows */
     int keypad_mode; /* keypad enabled */
+    int attr; /* current attributes */
 } WINDOW;
 
 extern WINDOW *stdscr;
@@ -53,6 +54,36 @@ int keypad(WINDOW *win, int bf);
 #define KEY_F10    KEY_F(10)
 #define KEY_F11    KEY_F(11)
 #define KEY_F12    KEY_F(12)
+
+/* Color definitions */
+#define COLOR_BLACK   0
+#define COLOR_RED     1
+#define COLOR_GREEN   2
+#define COLOR_YELLOW  3
+#define COLOR_BLUE    4
+#define COLOR_MAGENTA 5
+#define COLOR_CYAN    6
+#define COLOR_WHITE   7
+
+#define COLOR_PAIRS   256
+#define COLOR_PAIR(n)   ((n) << 8)
+#define PAIR_NUMBER(a)  (((a) >> 8) & 0xFF)
+#define A_COLOR       0xFF00
+
+int start_color(void);
+int init_pair(short pair, short fg, short bg);
+
+int attron(int attrs);
+int attroff(int attrs);
+int attrset(int attrs);
+int wattron(WINDOW *win, int attrs);
+int wattroff(WINDOW *win, int attrs);
+int wattrset(WINDOW *win, int attrs);
+int color_set(short pair, void *opts);
+int wcolor_set(WINDOW *win, short pair, void *opts);
+
+/* Internal helper used by the library */
+void _vcurses_apply_attr(int attr);
 
 #ifdef __cplusplus
 }
