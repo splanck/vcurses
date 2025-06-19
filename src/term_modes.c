@@ -26,3 +26,15 @@ int nocbreak(void) {
     orig_termios.c_lflag |= ICANON;
     return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
 }
+
+int raw(void) {
+    orig_termios.c_lflag &= ~(ICANON | ISIG);
+    orig_termios.c_cc[VMIN] = 1;
+    orig_termios.c_cc[VTIME] = 0;
+    return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+}
+
+int noraw(void) {
+    orig_termios.c_lflag |= ICANON | ISIG;
+    return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+}

@@ -42,3 +42,10 @@ color.
 - `wtimeout(win, ms)` specifies a delay in milliseconds for the next read.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
 
+## Terminal modes
+
+`initscr()` enters raw mode with echo disabled. Call `noraw()` to
+restore normal signal handling and `raw()` to enable raw mode again.
+Line buffering and echo can also be toggled with `cbreak()`/
+`nocbreak()` and `echo()`/`noecho()`.
+
