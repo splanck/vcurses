@@ -3,6 +3,29 @@
 #include <stdlib.h>
 #include <poll.h>
 
+/* mouse event queue helper */
+extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
+
+static int read_number(int *out, char *delim)
+{
+    char ch;
+    char digits[16];
+    int i = 0;
+    while (i < (int)sizeof(digits) - 1) {
+        if (read(STDIN_FILENO, &ch, 1) != 1)
+            return -1;
+        if (ch >= '0' && ch <= '9') {
+            digits[i++] = ch;
+        } else {
+            break;
+        }
+    }
+    digits[i] = '\0';
+    *out = atoi(digits);
+    *delim = ch;
+    return 0;
+}
+
 static int parse_escape_sequence(void) {
     char ch;
     if (read(STDIN_FILENO, &ch, 1) != 1)
@@ -11,7 +34,46 @@ static int parse_escape_sequence(void) {
     if (ch == '[') {
         if (read(STDIN_FILENO, &ch, 1) != 1)
             return 27;
-        if (ch >= '0' && ch <= '9') {
+        if (ch == '<') {
+            int b, x, y;
+            char d;
+            if (read_number(&b, &d) == -1 || d != ';')
+                return 27;
+            if (read_number(&x, &d) == -1 || d != ';')
+                return 27;
+            if (read_number(&y, &d) == -1)
+                return 27;
+            char final = d;
+            if (final != 'm' && final != 'M') {
+                if (read(STDIN_FILENO, &final, 1) != 1)
+                    return 27;
+            }
+
+            mmask_t bstate = 0;
+            if (final == 'm') {
+                switch (b) {
+                case 0: bstate = BUTTON1_RELEASED; break;
+                case 1: bstate = BUTTON2_RELEASED; break;
+                case 2: bstate = BUTTON3_RELEASED; break;
+                case 64: bstate = BUTTON4_RELEASED; break;
+                case 65: bstate = BUTTON5_RELEASED; break;
+                }
+            } else {
+                switch (b) {
+                case 0: bstate = BUTTON1_PRESSED; break;
+                case 1: bstate = BUTTON2_PRESSED; break;
+                case 2: bstate = BUTTON3_PRESSED; break;
+                case 64: bstate = BUTTON4_PRESSED; break;
+                case 65: bstate = BUTTON5_PRESSED; break;
+                }
+            }
+
+            if (bstate) {
+                _vc_mouse_push_event(bstate, x - 1, y - 1);
+                return KEY_MOUSE;
+            }
+            return 27;
+        } else if (ch >= '0' && ch <= '9') {
             char digits[4];
             int i = 0;
             digits[i++] = ch;
