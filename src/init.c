@@ -3,7 +3,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <sys/ioctl.h>
+
+/* resize helpers */
+extern void _vc_resize_init(void);
+extern void _vc_resize_shutdown(void);
 
 static struct termios orig_termios;
 static int term_initialized = 0;
@@ -21,16 +24,6 @@ static void handle_signal(int sig) {
     raise(sig);
 }
 
-static void handle_winch(int sig) {
-    (void)sig;
-    if (stdscr) {
-        struct winsize ws;
-        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0) {
-            stdscr->maxy = ws.ws_row;
-            stdscr->maxx = ws.ws_col;
-        }
-    }
-}
 
 WINDOW *initscr(void) {
     if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
@@ -51,14 +44,10 @@ WINDOW *initscr(void) {
     signal(SIGINT, handle_signal);
     signal(SIGTERM, handle_signal);
     signal(SIGHUP, handle_signal);
-    signal(SIGWINCH, handle_winch);
+    _vc_resize_init();
 
-    struct winsize ws;
-    int rows = 24, cols = 80;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0) {
-        rows = ws.ws_row;
-        cols = ws.ws_col;
-    }
+    int rows = LINES;
+    int cols = COLS;
 
     stdscr = calloc(1, sizeof(WINDOW));
     if (!stdscr) {
@@ -80,7 +69,7 @@ WINDOW *initscr(void) {
 
 int endwin(void) {
     restore_terminal();
-    signal(SIGWINCH, SIG_DFL);
+    _vc_resize_shutdown();
     extern void _vc_screen_free(void);
     _vc_screen_free();
     free(stdscr);

@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* functions from resize.c */
+extern void _vc_register_window(WINDOW *win);
+extern void _vc_unregister_window(WINDOW *win);
+
 WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     WINDOW *win = calloc(1, sizeof(WINDOW));
     if (!win) {
@@ -18,6 +22,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->keypad_mode = 0;
     win->scroll = 0;
     win->attr = COLOR_PAIR(0);
+    _vc_register_window(win);
     return win;
 }
 
@@ -25,6 +30,7 @@ int delwin(WINDOW *win) {
     if (!win || win == stdscr) {
         return -1;
     }
+    _vc_unregister_window(win);
     free(win);
     return 0;
 }

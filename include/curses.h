@@ -11,6 +11,8 @@ extern "C" {
 
 
 extern WINDOW *stdscr;
+extern int LINES;
+extern int COLS;
 
 WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
 int delwin(WINDOW *win);
