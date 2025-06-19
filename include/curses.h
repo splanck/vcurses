@@ -27,6 +27,9 @@ int waddstr(WINDOW *win, const char *str);
 int wgetch(WINDOW *win);
 int getch(void);
 int keypad(WINDOW *win, bool yes);
+int nodelay(WINDOW *win, bool bf);
+int wtimeout(WINDOW *win, int delay);
+int halfdelay(int tenths);
 int scrollok(WINDOW *win, bool bf);
 int wscrl(WINDOW *win, int lines);
 int wborder(WINDOW *win,

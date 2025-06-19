@@ -1,6 +1,7 @@
 #include "curses.h"
 #include <unistd.h>
 #include <stdlib.h>
+#include <poll.h>
 
 static int parse_escape_sequence(void) {
     char ch;
@@ -94,6 +95,15 @@ int wgetch(WINDOW *win) {
         return -1;
 
     char c;
+    int timeout = win->delay;
+
+    if (timeout >= 0) {
+        struct pollfd pfd = { .fd = STDIN_FILENO, .events = POLLIN };
+        int pr = poll(&pfd, 1, timeout);
+        if (pr <= 0)
+            return -1;
+    }
+
     if (read(STDIN_FILENO, &c, 1) != 1)
         return -1;
 
@@ -112,5 +122,24 @@ int keypad(WINDOW *win, bool yes) {
         return -1;
     win->keypad_mode = yes ? 1 : 0;
     return 0;
+}
+
+int wtimeout(WINDOW *win, int delay) {
+    if (!win)
+        return -1;
+    win->delay = delay;
+    return 0;
+}
+
+int nodelay(WINDOW *win, bool bf) {
+    return wtimeout(win, bf ? 0 : -1);
+}
+
+int halfdelay(int tenths) {
+    if (tenths <= 0 || tenths > 255 || !stdscr)
+        return -1;
+    if (cbreak() == -1)
+        return -1;
+    return wtimeout(stdscr, tenths * 100);
 }
 

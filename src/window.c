@@ -21,6 +21,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->parent = NULL;
     win->keypad_mode = 0;
     win->scroll = 0;
+    win->delay = -1;
     win->attr = COLOR_PAIR(0);
     _vc_register_window(win);
     return win;
