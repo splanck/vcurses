@@ -11,23 +11,8 @@ WINDOW *stdscr = NULL;
 #define MAX_COLOR_PAIRS COLOR_PAIRS
 
 typedef struct { short fg; short bg; } color_pair_t;
-static color_pair_t color_pairs[MAX_COLOR_PAIRS];
-static int colors_initialized = 0;
-
-int start_color(void) {
-    colors_initialized = 1;
-    color_pairs[0].fg = COLOR_WHITE;
-    color_pairs[0].bg = COLOR_BLACK;
-    return 0;
-}
-
-int init_pair(short pair, short fg, short bg) {
-    if (pair < 0 || pair >= MAX_COLOR_PAIRS)
-        return -1;
-    color_pairs[pair].fg = fg;
-    color_pairs[pair].bg = bg;
-    return 0;
-}
+extern color_pair_t _vc_color_pairs[MAX_COLOR_PAIRS];
+extern int _vc_colors_initialized;
 
 static void apply_attr(int attr) {
     /* reset attributes */
@@ -35,14 +20,14 @@ static void apply_attr(int attr) {
 
     if (attr & A_COLOR) {
         short pair = PAIR_NUMBER(attr);
-        if (pair >= 0 && pair < MAX_COLOR_PAIRS && colors_initialized) {
-            short fg = color_pairs[pair].fg;
-            short bg = color_pairs[pair].bg;
+        if (pair >= 0 && pair < MAX_COLOR_PAIRS && _vc_colors_initialized) {
+            short fg = _vc_color_pairs[pair].fg;
+            short bg = _vc_color_pairs[pair].bg;
             printf("\x1b[%d;%dm", 30 + fg, 40 + bg);
         }
-    } else if (colors_initialized) {
+    } else if (_vc_colors_initialized) {
         /* default colors */
-        printf("\x1b[%d;%dm", 30 + color_pairs[0].fg, 40 + color_pairs[0].bg);
+        printf("\x1b[%d;%dm", 30 + _vc_color_pairs[0].fg, 40 + _vc_color_pairs[0].bg);
     }
 
     if (attr & A_BOLD)
@@ -58,6 +43,8 @@ void _vcurses_apply_attr(int attr) {
 int wattron(WINDOW *win, int attrs) {
     if (!win)
         return -1;
+    if (attrs & A_COLOR)
+        win->attr &= ~A_COLOR;
     win->attr |= attrs;
     return 0;
 }
@@ -65,6 +52,8 @@ int wattron(WINDOW *win, int attrs) {
 int wattroff(WINDOW *win, int attrs) {
     if (!win)
         return -1;
+    if (attrs & A_COLOR)
+        win->attr &= ~A_COLOR;
     win->attr &= ~attrs;
     return 0;
 }
