@@ -1,6 +1,8 @@
 #include <check.h>
 #include "../include/curses.h"
 
+Suite *scroll_suite(void);
+
 START_TEST(test_newwin_basic)
 {
     WINDOW *w = newwin(5, 10, 2, 3);
@@ -144,8 +146,10 @@ Suite *window_suite(void)
 
 int main(void)
 {
-    Suite *s = window_suite();
-    SRunner *sr = srunner_create(s);
+    Suite *s1 = window_suite();
+    Suite *s2 = scroll_suite();
+    SRunner *sr = srunner_create(s1);
+    srunner_add_suite(sr, s2);
     srunner_run_all(sr, CK_ENV); // use CK_ENV to get TAP or not
     int nf = srunner_ntests_failed(sr);
     srunner_free(sr);

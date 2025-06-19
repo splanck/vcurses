@@ -11,6 +11,7 @@ typedef struct window {
     int cury, curx; /* cursor position */
     struct window *parent; /* parent for subwindows */
     int keypad_mode; /* keypad enabled */
+    int scroll; /* scrolling enabled */
     int attr; /* current attributes */
 } WINDOW;
 

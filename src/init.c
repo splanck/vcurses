@@ -72,6 +72,7 @@ WINDOW *initscr(void) {
     stdscr->curx = 0;
     stdscr->parent = NULL;
     stdscr->keypad_mode = 0;
+    stdscr->scroll = 0;
     stdscr->attr = COLOR_PAIR(0);
 
     return stdscr;
