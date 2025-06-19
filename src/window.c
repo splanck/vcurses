@@ -108,3 +108,65 @@ int wscrl(WINDOW *win, int lines) {
     }
     return 0;
 }
+
+int wborder(WINDOW *win,
+            char ls, char rs, char ts, char bs,
+            char tl, char tr, char bl, char br) {
+    if (!win)
+        return -1;
+
+    /* default ASCII characters */
+    if (!ls) ls = '|';
+    if (!rs) rs = '|';
+    if (!ts) ts = '-';
+    if (!bs) bs = '-';
+    if (!tl) tl = '+';
+    if (!tr) tr = '+';
+    if (!bl) bl = '+';
+    if (!br) br = '+';
+
+    int height = win->maxy;
+    int width = win->maxx;
+
+    char buf[2] = {0, 0};
+
+    /* top and bottom */
+    for (int x = 0; x < width; ++x) {
+        if (x == 0)
+            buf[0] = tl;
+        else if (x == width - 1)
+            buf[0] = tr;
+        else
+            buf[0] = ts;
+        _vc_screen_puts(win->begy, win->begx + x, buf, win->attr);
+
+        if (height > 1) {
+            if (x == 0)
+                buf[0] = bl;
+            else if (x == width - 1)
+                buf[0] = br;
+            else
+                buf[0] = bs;
+            _vc_screen_puts(win->begy + height - 1, win->begx + x,
+                            buf, win->attr);
+        }
+    }
+
+    /* left and right sides */
+    for (int y = 1; y < height - 1; ++y) {
+        buf[0] = ls;
+        _vc_screen_puts(win->begy + y, win->begx, buf, win->attr);
+        if (width > 1) {
+            buf[0] = rs;
+            _vc_screen_puts(win->begy + y, win->begx + width - 1,
+                            buf, win->attr);
+        }
+    }
+
+    return 0;
+}
+
+int box(WINDOW *win, char verch, char horch) {
+    return wborder(win, verch, verch, horch, horch,
+                   0, 0, 0, 0);
+}
