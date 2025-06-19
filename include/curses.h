@@ -26,6 +26,8 @@ int addstr(const char *str);
 int waddstr(WINDOW *win, const char *str);
 int wgetch(WINDOW *win);
 int getch(void);
+int wgetstr(WINDOW *win, char *str);
+int getstr(char *str);
 int keypad(WINDOW *win, bool yes);
 int nodelay(WINDOW *win, bool bf);
 int wtimeout(WINDOW *win, int delay);

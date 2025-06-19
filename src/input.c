@@ -117,6 +117,27 @@ int getch(void) {
     return wgetch(stdscr);
 }
 
+int wgetstr(WINDOW *win, char *str) {
+    if (!win || !str)
+        return -1;
+
+    int ch;
+    char *p = str;
+
+    while ((ch = wgetch(win)) != -1) {
+        if (ch == '\n' || ch == '\r') {
+            *p = '\0';
+            return 0;
+        }
+        *p++ = (char)ch;
+    }
+    return -1;
+}
+
+int getstr(char *str) {
+    return wgetstr(stdscr, str);
+}
+
 int keypad(WINDOW *win, bool yes) {
     if (!win)
         return -1;
