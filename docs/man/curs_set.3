@@ -1,0 +1,19 @@
+.TH curs_set 3 "2025-06-19" "vcurses" "vcurses Library"
+.SH NAME
+curs_set \- control cursor visibility
+.SH SYNOPSIS
+.nf
+#include <curses.h>
+.sp
+.BI "int curs_set(int visibility);"
+.fi
+.SH DESCRIPTION
+The \fBcurs_set()\fP function changes the terminal's cursor visibility.  If
+\fIvisibility\fP is 0 the cursor is hidden, otherwise it is shown.  The
+previous visibility state is returned or -1 if \fIvisibility\fP is
+invalid.
+.SH RETURN VALUE
+On success the previous visibility state is returned.  On error -1 is
+returned.
+.SH SEE ALSO
+initscr(3)
