@@ -159,12 +159,10 @@ int wgetch(WINDOW *win) {
     char c;
     int timeout = win->delay;
 
-    if (timeout >= 0) {
-        struct pollfd pfd = { .fd = STDIN_FILENO, .events = POLLIN };
-        int pr = poll(&pfd, 1, timeout);
-        if (pr <= 0)
-            return -1;
-    }
+    struct pollfd pfd = { .fd = STDIN_FILENO, .events = POLLIN };
+    int pr = poll(&pfd, 1, timeout);
+    if (pr <= 0)
+        return -1;
 
     if (read(STDIN_FILENO, &c, 1) != 1)
         return -1;

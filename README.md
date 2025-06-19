@@ -33,3 +33,12 @@ enable color handling and define up to 256 color pairs with
 defined pair. Use `pair_content(pair, &fg, &bg)` to query a pair and
 `color_content(color, &r, &g, &b)` to retrieve the RGB components of a
 color.
+
+## Input timeouts
+
+`wgetch()` can wait for input in three ways:
+
+- `nodelay(win, true)` makes reads non-blocking.
+- `wtimeout(win, ms)` specifies a delay in milliseconds for the next read.
+- `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
+
