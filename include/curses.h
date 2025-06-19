@@ -29,6 +29,10 @@ int getch(void);
 int keypad(WINDOW *win, bool yes);
 int scrollok(WINDOW *win, bool bf);
 int wscrl(WINDOW *win, int lines);
+int wborder(WINDOW *win,
+            char ls, char rs, char ts, char bs,
+            char tl, char tr, char bl, char br);
+int box(WINDOW *win, char verch, char horch);
 
 /* Special key definitions */
 #define KEY_UP     0x101
