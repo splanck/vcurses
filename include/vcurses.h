@@ -42,6 +42,10 @@ int clear(void);
 int clrtobot(void);
 int clrtoeol(void);
 int refresh(void);
+int echo(void);
+int noecho(void);
+int cbreak(void);
+int nocbreak(void);
 
 #ifdef __cplusplus
 }
