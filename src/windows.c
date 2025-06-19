@@ -15,6 +15,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->cury = 0;
     win->curx = 0;
     win->parent = NULL;
+    win->keypad_mode = 0;
     return win;
 }
 
