@@ -3,7 +3,7 @@ AR ?= ar
 CFLAGS ?= -Iinclude -Wall -Wextra -fPIC
 BUILD := build
 LIB := libvcurses.a
-SRCS := src/vcurses.c
+SRCS := src/vcurses.c src/curses.c
 OBJS := $(patsubst src/%.c,$(BUILD)/%.o,$(SRCS))
 
 all: $(LIB)
