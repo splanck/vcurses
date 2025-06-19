@@ -58,7 +58,7 @@ int wmove(WINDOW *win, int y, int x) {
     return 0;
 }
 
-extern void _vc_screen_puts(int y, int x, const char *str);
+extern void _vc_screen_puts(int y, int x, const char *str, int attr);
 
 int waddstr(WINDOW *win, const char *str) {
     if (!win || !str) {
@@ -66,7 +66,7 @@ int waddstr(WINDOW *win, const char *str) {
     }
     int row = win->begy + win->cury;
     int col = win->begx + win->curx;
-    _vc_screen_puts(row, col, str);
+    _vc_screen_puts(row, col, str, win->attr);
     win->curx += strlen(str);
     return 0;
 }

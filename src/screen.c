@@ -4,13 +4,15 @@
 #include <string.h>
 
 static char **screen_buf = NULL;
+static int **attr_buf = NULL;
 static int buf_rows = 0;
 static int buf_cols = 0;
 
 static int ensure_buffer(void) {
     if (!stdscr)
         return -1;
-    if (screen_buf && buf_rows == stdscr->maxy && buf_cols == stdscr->maxx)
+    if (screen_buf && attr_buf &&
+        buf_rows == stdscr->maxy && buf_cols == stdscr->maxx)
         return 0;
     if (screen_buf) {
         for (int r = 0; r < buf_rows; ++r)
@@ -18,42 +20,67 @@ static int ensure_buffer(void) {
         free(screen_buf);
         screen_buf = NULL;
     }
+    if (attr_buf) {
+        for (int r = 0; r < buf_rows; ++r)
+            free(attr_buf[r]);
+        free(attr_buf);
+        attr_buf = NULL;
+    }
     buf_rows = stdscr->maxy;
     buf_cols = stdscr->maxx;
     screen_buf = malloc(sizeof(char *) * buf_rows);
-    if (!screen_buf)
+    attr_buf = malloc(sizeof(int *) * buf_rows);
+    if (!screen_buf || !attr_buf)
         return -1;
     for (int r = 0; r < buf_rows; ++r) {
         screen_buf[r] = malloc(buf_cols);
-        if (!screen_buf[r]) {
-            for (int i = 0; i < r; ++i)
-                free(screen_buf[i]);
+        attr_buf[r] = malloc(sizeof(int) * buf_cols);
+        if (!screen_buf[r] || !attr_buf[r]) {
+            for (int i = 0; i <= r; ++i) {
+                if (i < r) {
+                    free(screen_buf[i]);
+                    free(attr_buf[i]);
+                }
+            }
             free(screen_buf);
+            free(attr_buf);
             screen_buf = NULL;
+            attr_buf = NULL;
             return -1;
         }
         memset(screen_buf[r], ' ', buf_cols);
+        for (int c = 0; c < buf_cols; ++c)
+            attr_buf[r][c] = stdscr->attr;
     }
     return 0;
 }
 
-void _vc_screen_puts(int y, int x, const char *str) {
+void _vc_screen_puts(int y, int x, const char *str, int attr) {
     if (ensure_buffer() == -1 || !str)
         return;
     if (y < 0 || y >= buf_rows)
         return;
     int col = x;
-    for (const char *p = str; *p && col < buf_cols; ++p)
-        screen_buf[y][col++] = *p;
+    for (const char *p = str; *p && col < buf_cols; ++p) {
+        screen_buf[y][col] = *p;
+        attr_buf[y][col] = attr;
+        col++;
+    }
 }
 
 void _vc_screen_free(void) {
-    if (!screen_buf)
-        return;
-    for (int r = 0; r < buf_rows; ++r)
-        free(screen_buf[r]);
-    free(screen_buf);
-    screen_buf = NULL;
+    if (screen_buf) {
+        for (int r = 0; r < buf_rows; ++r)
+            free(screen_buf[r]);
+        free(screen_buf);
+        screen_buf = NULL;
+    }
+    if (attr_buf) {
+        for (int r = 0; r < buf_rows; ++r)
+            free(attr_buf[r]);
+        free(attr_buf);
+        attr_buf = NULL;
+    }
 }
 
 int clear(void) {
@@ -65,8 +92,11 @@ int clear(void) {
         }
         return 0;
     }
-    for (int r = 0; r < buf_rows; ++r)
+    for (int r = 0; r < buf_rows; ++r) {
         memset(screen_buf[r], ' ', buf_cols);
+        for (int c = 0; c < buf_cols; ++c)
+            attr_buf[r][c] = stdscr->attr;
+    }
     if (stdscr) {
         stdscr->cury = 0;
         stdscr->curx = 0;
@@ -81,8 +111,11 @@ int clrtoeol(void) {
     }
     if (!stdscr || stdscr->cury >= buf_rows)
         return -1;
-    if (stdscr->curx < buf_cols)
+    if (stdscr->curx < buf_cols) {
         memset(&screen_buf[stdscr->cury][stdscr->curx], ' ', buf_cols - stdscr->curx);
+        for (int c = stdscr->curx; c < buf_cols; ++c)
+            attr_buf[stdscr->cury][c] = stdscr->attr;
+    }
     return 0;
 }
 
@@ -94,8 +127,11 @@ int clrtobot(void) {
     if (!stdscr || stdscr->cury >= buf_rows)
         return -1;
     clrtoeol();
-    for (int r = stdscr->cury + 1; r < buf_rows; ++r)
+    for (int r = stdscr->cury + 1; r < buf_rows; ++r) {
         memset(screen_buf[r], ' ', buf_cols);
+        for (int c = 0; c < buf_cols; ++c)
+            attr_buf[r][c] = stdscr->attr;
+    }
     return 0;
 }
 
@@ -104,7 +140,17 @@ int refresh(void) {
         return fflush(stdout);
     for (int r = 0; r < buf_rows; ++r) {
         printf("\x1b[%d;1H", r + 1);
-        fwrite(screen_buf[r], 1, buf_cols, stdout);
+        int current_attr = -1;
+        for (int c = 0; c < buf_cols; ++c) {
+            int a = attr_buf[r][c];
+            if (a != current_attr) {
+                _vcurses_apply_attr(a);
+                current_attr = a;
+            }
+            fputc(screen_buf[r][c], stdout);
+        }
+        if (current_attr != -1)
+            _vcurses_apply_attr(A_NORMAL | COLOR_PAIR(0));
     }
     if (stdscr)
         printf("\x1b[%d;%dH", stdscr->cury + 1, stdscr->curx + 1);

@@ -49,25 +49,6 @@ int keypad(WINDOW *win, bool yes);
 #define KEY_F11    KEY_F(11)
 #define KEY_F12    KEY_F(12)
 
-/* Color definitions */
-#define COLOR_BLACK   0
-#define COLOR_RED     1
-#define COLOR_GREEN   2
-#define COLOR_YELLOW  3
-#define COLOR_BLUE    4
-#define COLOR_MAGENTA 5
-#define COLOR_CYAN    6
-#define COLOR_WHITE   7
-
-#define COLOR_PAIRS   256
-#define COLOR_PAIR(n)   ((n) << 8)
-#define PAIR_NUMBER(a)  (((a) >> 8) & 0xFF)
-
-/* Attribute masks */
-#define A_NORMAL      0x0000
-#define A_COLOR       0xFF00
-#define A_BOLD        0x010000
-#define A_UNDERLINE   0x020000
 
 int start_color(void);
 int init_pair(short pair, short fg, short bg);
