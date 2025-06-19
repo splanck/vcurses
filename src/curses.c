@@ -79,3 +79,15 @@ int wcolor_set(WINDOW *win, short pair, void *opts) {
 }
 
 int color_set(short pair, void *opts) { return wcolor_set(stdscr, pair, opts); }
+
+int move(int y, int x) {
+    return wmove(stdscr, y, x);
+}
+
+int addstr(const char *str) {
+    return waddstr(stdscr, str);
+}
+
+int addch(char ch) {
+    return waddch(stdscr, ch);
+}

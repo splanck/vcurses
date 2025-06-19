@@ -70,3 +70,10 @@ int waddstr(WINDOW *win, const char *str) {
     win->curx += strlen(str);
     return 0;
 }
+
+int waddch(WINDOW *win, char ch) {
+    char buf[2];
+    buf[0] = ch;
+    buf[1] = '\0';
+    return waddstr(win, buf);
+}
