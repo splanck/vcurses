@@ -16,6 +16,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->curx = 0;
     win->parent = NULL;
     win->keypad_mode = 0;
+    win->attr = COLOR_PAIR(0);
     return win;
 }
 
@@ -63,7 +64,9 @@ int waddstr(WINDOW *win, const char *str) {
     }
     int row = win->begy + win->cury;
     int col = win->begx + win->curx;
-    printf("\x1b[%d;%dH%s", row + 1, col + 1, str);
+    printf("\x1b[%d;%dH", row + 1, col + 1);
+    _vcurses_apply_attr(win->attr);
+    printf("%s", str);
     win->curx += strlen(str);
     return 0;
 }
