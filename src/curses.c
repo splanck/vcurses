@@ -23,6 +23,17 @@ static void handle_signal(int sig) {
     raise(sig);
 }
 
+static void handle_winch(int sig) {
+    (void)sig;
+    if (stdscr) {
+        struct winsize ws;
+        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0) {
+            stdscr->maxy = ws.ws_row;
+            stdscr->maxx = ws.ws_col;
+        }
+    }
+}
+
 WINDOW *initscr(void) {
     if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
         return NULL;
@@ -42,6 +53,7 @@ WINDOW *initscr(void) {
     signal(SIGINT, handle_signal);
     signal(SIGTERM, handle_signal);
     signal(SIGHUP, handle_signal);
+    signal(SIGWINCH, handle_winch);
 
     struct winsize ws;
     int rows = 24, cols = 80;
@@ -69,6 +81,7 @@ WINDOW *initscr(void) {
 
 int endwin(void) {
     restore_terminal();
+    signal(SIGWINCH, SIG_DFL);
     free(stdscr);
     stdscr = NULL;
     return 0;
