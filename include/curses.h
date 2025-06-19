@@ -18,6 +18,10 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
 int delwin(WINDOW *win);
 WINDOW *subwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
 WINDOW *derwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
+WINDOW *newpad(int nlines, int ncols);
+WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
+int prefresh(WINDOW *pad, int pminrow, int pmincol,
+             int sminrow, int smincol, int smaxrow, int smaxcol);
 int wmove(WINDOW *win, int y, int x);
 int move(int y, int x);
 int waddch(WINDOW *win, char ch);
