@@ -235,13 +235,8 @@ int wscrl(WINDOW *win, int lines) {
         return -1;
     if (lines == 0)
         return 0;
-    if (lines > 0) {
-        _vc_screen_scroll_region(win->begy, win->begx, win->maxy, win->maxx,
-                                 lines, win->attr);
-    } else {
-        /* downward scrolling not implemented */
-        return -1;
-    }
+    _vc_screen_scroll_region(win->begy, win->begx, win->maxy, win->maxx,
+                             lines, win->attr);
     return 0;
 }
 
