@@ -7,14 +7,7 @@
 extern "C" {
 #endif
 
-typedef struct window {
-    int begy, begx; /* origin */
-    int maxy, maxx; /* size */
-    int cury, curx; /* cursor position */
-    struct window *parent; /* parent for subwindows */
-    int keypad_mode; /* keypad enabled */
-    int attr; /* current attributes */
-} WINDOW;
+
 
 extern WINDOW *stdscr;
 
