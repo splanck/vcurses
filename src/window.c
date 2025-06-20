@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 /* functions from resize.c */
 extern void _vc_register_window(WINDOW *win);
@@ -123,6 +124,35 @@ int waddch(WINDOW *win, char ch) {
     buf[0] = ch;
     buf[1] = '\0';
     return waddstr(win, buf);
+}
+
+static int vwprintw_internal(WINDOW *win, const char *fmt, va_list ap) {
+    if (!win || !fmt)
+        return -1;
+
+    va_list ap_copy;
+    va_copy(ap_copy, ap);
+    int len = vsnprintf(NULL, 0, fmt, ap_copy);
+    va_end(ap_copy);
+    if (len < 0)
+        return -1;
+
+    char *buf = malloc((size_t)len + 1);
+    if (!buf)
+        return -1;
+
+    vsnprintf(buf, (size_t)len + 1, fmt, ap);
+    int r = waddstr(win, buf);
+    free(buf);
+    return r;
+}
+
+int wprintw(WINDOW *win, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwprintw_internal(win, fmt, ap);
+    va_end(ap);
+    return r;
 }
 
 int scrollok(WINDOW *win, bool bf) {

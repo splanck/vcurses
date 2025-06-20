@@ -29,6 +29,8 @@ int waddch(WINDOW *win, char ch);
 int addch(char ch);
 int addstr(const char *str);
 int waddstr(WINDOW *win, const char *str);
+int wprintw(WINDOW *win, const char *fmt, ...);
+int printw(const char *fmt, ...);
 int wgetch(WINDOW *win);
 int getch(void);
 int wgetstr(WINDOW *win, char *buf);

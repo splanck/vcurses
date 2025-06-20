@@ -16,6 +16,16 @@ is typical for command prompts.
 `getstr` reads from `stdscr`, while `wgetstr` accepts the window to read from.
 Both respect keypad mode, returning special key codes if keypad is enabled.
 
+## Formatted output
+
+Use `wprintw(win, fmt, ...)` to print formatted text directly into a window.
+`printw()` performs the same operation on `stdscr`.
+
+```c
+wprintw(win, "Value %d", i);
+printw("Hello %s", name);
+```
+
 ## Color customization
 
 Call `start_color()` to enable color handling. The RGB components of the

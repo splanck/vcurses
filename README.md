@@ -80,3 +80,13 @@ exposed lines are cleared using the window's current attributes.
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when
 `wgetch()` returns `KEY_MOUSE`.
 
+## Formatted output
+
+`wprintw(win, fmt, ...)` works like `printf` but writes into a window.
+`printw()` is a convenience wrapper that targets `stdscr`.
+
+```c
+wprintw(win, "Count: %d", n);
+printw("%s\n", msg);
+```
+
