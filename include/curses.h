@@ -54,6 +54,20 @@ int wclear(WINDOW *win);
 int wclrtobot(WINDOW *win);
 int wclrtoeol(WINDOW *win);
 
+/* --- Convenience macros ---------------------------------------------- */
+#define getcury(win)      ((win)->cury)
+#define getcurx(win)      ((win)->curx)
+#define getbegy(win)      ((win)->begy)
+#define getbegx(win)      ((win)->begx)
+#define getmaxy(win)      ((win)->maxy)
+#define getmaxx(win)      ((win)->maxx)
+#define getpary(win)      ((win)->parent ? (win)->begy - (win)->parent->begy : -1)
+#define getparx(win)      ((win)->parent ? (win)->begx - (win)->parent->begx : -1)
+#define getyx(win,y,x)    ((y) = getcury(win), (x) = getcurx(win))
+#define getbegyx(win,y,x) ((y) = getbegy(win), (x) = getbegx(win))
+#define getmaxyx(win,y,x) ((y) = getmaxy(win), (x) = getmaxx(win))
+#define getparyx(win,y,x) ((y) = getpary(win), (x) = getparx(win))
+
 /* --- Mouse support ---------------------------------------------------- */
 typedef unsigned long mmask_t;
 
