@@ -19,16 +19,15 @@ static void apply_attr(int attr) {
     /* reset attributes */
     printf("\x1b[0m");
 
-    if (attr & A_COLOR) {
-        short pair = PAIR_NUMBER(attr);
-        if (pair >= 0 && pair < MAX_COLOR_PAIRS && _vc_colors_initialized) {
+    if (_vc_colors_initialized) {
+        short pair = (attr & A_COLOR) ? PAIR_NUMBER(attr) : 0;
+        if (pair >= 0 && pair < MAX_COLOR_PAIRS) {
             short fg = _vc_color_pairs[pair].fg;
             short bg = _vc_color_pairs[pair].bg;
-            printf("\x1b[%d;%dm", 30 + fg, 40 + bg);
+            int fg_code = (fg == -1) ? 39 : 30 + fg;
+            int bg_code = (bg == -1) ? 49 : 40 + bg;
+            printf("\x1b[%d;%dm", fg_code, bg_code);
         }
-    } else if (_vc_colors_initialized) {
-        /* default colors */
-        printf("\x1b[%d;%dm", 30 + _vc_color_pairs[0].fg, 40 + _vc_color_pairs[0].bg);
     }
 
     if (attr & A_BOLD)
@@ -83,7 +82,8 @@ int wcolor_set(WINDOW *win, short pair, void *opts) {
     if (!win)
         return -1;
     win->attr &= ~A_COLOR;
-    win->attr |= COLOR_PAIR(pair);
+    if (pair >= 0 && pair < COLOR_PAIRS)
+        win->attr |= COLOR_PAIR(pair);
     return 0;
 }
 

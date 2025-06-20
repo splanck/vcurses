@@ -5,6 +5,7 @@ typedef struct { short r; short g; short b; } color_rgb_t;
 
 color_pair_t _vc_color_pairs[COLOR_PAIRS];
 int _vc_colors_initialized = 0;
+static int _vc_use_default_colors = 0;
 static color_rgb_t _vc_colors[8];
 
 int start_color(void) {
@@ -22,8 +23,17 @@ int start_color(void) {
     return 0;
 }
 
+int use_default_colors(void) {
+    _vc_use_default_colors = 1;
+    return 0;
+}
+
 int init_pair(short pair, short fg, short bg) {
     if (pair < 0 || pair >= COLOR_PAIRS)
+        return -1;
+    if (!_vc_use_default_colors && (fg < 0 || bg < 0))
+        return -1;
+    if (fg < -1 || fg > COLOR_WHITE || bg < -1 || bg > COLOR_WHITE)
         return -1;
     _vc_color_pairs[pair].fg = fg;
     _vc_color_pairs[pair].bg = bg;
