@@ -86,3 +86,9 @@ whline(win, '-', 10); /* horizontal line */
 wvline(win, '|', 5);  /* vertical line */
 ```
 
+## Refreshing windows
+
+Call `refresh()` to write the full screen to the terminal. When only a
+portion of the display has changed, `wrefresh(win)` flushes just that
+window's area.
+

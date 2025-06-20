@@ -157,6 +157,34 @@ int refresh(void) {
     return fflush(stdout);
 }
 
+void _vc_screen_refresh_region(int top, int left, int height, int width) {
+    if (ensure_buffer() == -1)
+        return;
+    if (top < 0 || left < 0 || top >= buf_rows || left >= buf_cols)
+        return;
+    int bottom = top + height;
+    if (bottom > buf_rows)
+        bottom = buf_rows;
+    int right = left + width;
+    if (right > buf_cols)
+        right = buf_cols;
+
+    for (int r = top; r < bottom; ++r) {
+        printf("\x1b[%d;%dH", r + 1, left + 1);
+        int current_attr = -1;
+        for (int c = left; c < right; ++c) {
+            int a = attr_buf[r][c];
+            if (a != current_attr) {
+                _vcurses_apply_attr(a);
+                current_attr = a;
+            }
+            fputc(screen_buf[r][c], stdout);
+        }
+        if (current_attr != -1)
+            _vcurses_apply_attr(A_NORMAL | COLOR_PAIR(0));
+    }
+}
+
 void _vc_screen_scroll_region(int top, int left, int height, int width,
                               int lines, int attr) {
     /* scroll a rectangular region by the given line count.  A positive

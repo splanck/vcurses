@@ -58,6 +58,10 @@ Line buffering and echo can also be toggled with `cbreak()`/
 `beep()` writes an audible bell (\a) to the terminal. `flash()` emits a brief
 visual flash using ANSI escape codes when supported.
 
+`refresh()` redraws the entire screen from the internal buffer. Use
+`wrefresh(win)` to update only a specific window when you don't need to
+repaint everything.
+
 ## Scrolling
 
 Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
