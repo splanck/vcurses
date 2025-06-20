@@ -132,13 +132,24 @@ int scrollok(WINDOW *win, bool bf) {
     return 0;
 }
 
+/*
+ * Scroll the specified window by the given number of lines. Positive values
+ * scroll upward, while negative values scroll downward.
+ */
 int wscrl(WINDOW *win, int lines) {
     if (!win)
         return -1;
     if (lines == 0)
         return 0;
+
+    int count = lines;
+    if (lines > win->maxy)
+        count = win->maxy;
+    else if (lines < -win->maxy)
+        count = -win->maxy;
+
     _vc_screen_scroll_region(win->begy, win->begx, win->maxy, win->maxx,
-                             lines, win->attr);
+                             count, win->attr);
     return 0;
 }
 

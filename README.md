@@ -58,6 +58,12 @@ Line buffering and echo can also be toggled with `cbreak()`/
 `beep()` writes an audible bell (\a) to the terminal. `flash()` emits a brief
 visual flash using ANSI escape codes when supported.
 
+## Scrolling
+
+Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
+value scrolls the region up while a negative value scrolls it down. Newly
+exposed lines are cleared using the window's current attributes.
+
 ## Mouse input
 
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when

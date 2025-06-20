@@ -65,3 +65,14 @@ int prefresh(WINDOW *pad, int pminrow, int pmincol,
 `sminrow`, `smincol`, `smaxrow` and `smaxcol` specify the destination
 rectangle on screen.
 
+## Scrolling windows
+
+The `wscrl` function scrolls a window by a number of lines. Positive values
+move the contents up, and negative values scroll down:
+
+```c
+WINDOW *log = newwin(10, 40, 0, 0);
+scrollok(log, true);
+wscrl(log, -1);   /* scroll down one line */
+```
+
