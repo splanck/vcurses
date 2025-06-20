@@ -130,6 +130,8 @@ int getmouse(MEVENT *event);
 #define KEY_PPAGE  0x108
 #define KEY_IC     0x109
 #define KEY_DC     0x10A
+#define KEY_BACKSPACE 0x10B
+#define KEY_ENTER     0x10C
 
 #define KEY_F0     0x110
 #define KEY_F(n)   (KEY_F0 + (n))

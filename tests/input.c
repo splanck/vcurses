@@ -103,6 +103,26 @@ START_TEST(test_getnstr_wrapper)
 }
 END_TEST
 
+START_TEST(test_keypad_translates_backspace)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    keypad(w, true);
+    ungetch('\x7f');
+    ck_assert_int_eq(wgetch(w), KEY_BACKSPACE);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_keypad_translates_enter)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    keypad(w, true);
+    ungetch('\n');
+    ck_assert_int_eq(wgetch(w), KEY_ENTER);
+    delwin(w);
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -114,6 +134,8 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_resize_event);
     tcase_add_test(tc, test_wgetnstr_limits_length);
     tcase_add_test(tc, test_getnstr_wrapper);
+    tcase_add_test(tc, test_keypad_translates_backspace);
+    tcase_add_test(tc, test_keypad_translates_enter);
     suite_add_tcase(s, tc);
     return s;
 }

@@ -146,6 +146,7 @@ static int parse_escape_sequence(void) {
         case 'D': return KEY_LEFT;
         case 'H': return KEY_HOME;
         case 'F': return KEY_END;
+        case 'M': return KEY_ENTER;
         case 'P': return KEY_F1;
         case 'Q': return KEY_F2;
         case 'R': return KEY_F3;
@@ -161,8 +162,16 @@ int wgetch(WINDOW *win) {
     if (!win)
         return -1;
 
-    if (input_qcount > 0)
-        return input_queue[--input_qcount];
+    if (input_qcount > 0) {
+        int ch = input_queue[--input_qcount];
+        if (win->keypad_mode) {
+            if (ch == '\x7f' || ch == '\b')
+                return KEY_BACKSPACE;
+            if (ch == '\n' || ch == '\r')
+                return KEY_ENTER;
+        }
+        return ch;
+    }
 
     char c;
     int timeout = win->delay;
@@ -175,8 +184,14 @@ int wgetch(WINDOW *win) {
     if (read(STDIN_FILENO, &c, 1) != 1)
         return -1;
 
-    if (win->keypad_mode && c == '\x1b')
-        return parse_escape_sequence();
+    if (win->keypad_mode) {
+        if (c == '\x1b')
+            return parse_escape_sequence();
+        if (c == '\x7f' || c == '\b')
+            return KEY_BACKSPACE;
+        if (c == '\n' || c == '\r')
+            return KEY_ENTER;
+    }
 
     return (unsigned char)c;
 }
