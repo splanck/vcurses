@@ -117,6 +117,13 @@ Only the specified window's backing buffers are modified. The changes become
 visible after calling `wrefresh()` or `prefresh()` as appropriate. Clearing
 operations honour the window's current attributes when filling spaces.
 
+## Copying windows
+
+Use `overwrite(src, dst)` to duplicate the contents of one window into
+another. `overlay(src, dst)` is similar but leaves destination characters
+unchanged wherever the source contains spaces. Both functions modify only
+the backing buffers; call `wrefresh()` or `prefresh()` to display the result.
+
 ## Moving windows
 
 Use `mvwin(win, y, x)` to reposition a window. The coordinates are
