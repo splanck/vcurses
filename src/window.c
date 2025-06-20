@@ -141,6 +141,7 @@ int wmove(WINDOW *win, int y, int x) {
 extern void _vc_screen_puts(int y, int x, const char *str, int attr);
 extern void _vc_screen_scroll_region(int top, int left, int height, int width,
                                      int lines, int attr);
+extern int _vc_screen_get_cell(int y, int x, char *ch, int *attr);
 
 int waddstr(WINDOW *win, const char *str) {
     if (!win || !str) {
@@ -596,6 +597,99 @@ int wclrtobot(WINDOW *win) {
     }
     mark_dirty(win, win->cury, win->maxy - win->cury);
     return 0;
+}
+
+static int insert_char_screen(int y, int x, int max, char ch, int attr)
+{
+    for (int i = max - 1; i > 0; --i) {
+        char prev = ' ';
+        int prev_attr = attr;
+        _vc_screen_get_cell(y, x + i - 1, &prev, &prev_attr);
+        char buf[2] = { prev, 0 };
+        _vc_screen_puts(y, x + i, buf, prev_attr);
+    }
+    char buf[2] = { ch, 0 };
+    _vc_screen_puts(y, x, buf, attr);
+    return 0;
+}
+
+int winsch(WINDOW *win, char ch)
+{
+    if (!win)
+        return -1;
+    int len = win->maxx - win->curx;
+    if (len <= 0)
+        return -1;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int rr = win->pad_y + win->cury;
+        int cc = win->pad_x + win->curx;
+        if (rr >= root->maxy || cc >= root->maxx)
+            return -1;
+        if (cc + len > root->maxx)
+            len = root->maxx - cc;
+        for (int i = len - 1; i > 0; --i) {
+            root->pad_buf[rr][cc + i] = root->pad_buf[rr][cc + i - 1];
+            root->pad_attr[rr][cc + i] = root->pad_attr[rr][cc + i - 1];
+        }
+        root->pad_buf[rr][cc] = ch;
+        root->pad_attr[rr][cc] = win->attr;
+    } else {
+        int row = win->begy + win->cury;
+        int col = win->begx + win->curx;
+        if (col + len > COLS)
+            len = COLS - col;
+        insert_char_screen(row, col, len, ch, win->attr);
+    }
+    mark_dirty(win, win->cury, 1);
+    return 0;
+}
+
+int mvwinsch(WINDOW *win, int y, int x, char ch)
+{
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return winsch(win, ch);
+}
+
+int insch(char ch)
+{
+    return winsch(stdscr, ch);
+}
+
+int mvinsch(int y, int x, char ch)
+{
+    return mvwinsch(stdscr, y, x, ch);
+}
+
+int winsstr(WINDOW *win, const char *str)
+{
+    if (!win || !str)
+        return -1;
+    size_t len = strlen(str);
+    for (size_t i = len; i-- > 0;) {
+        if (winsch(win, str[i]) == -1)
+            return -1;
+    }
+    return 0;
+}
+
+int mvwinsstr(WINDOW *win, int y, int x, const char *str)
+{
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return winsstr(win, str);
+}
+
+int insstr(const char *str)
+{
+    return winsstr(stdscr, str);
+}
+
+int mvinsstr(int y, int x, const char *str)
+{
+    return mvwinsstr(stdscr, y, x, str);
 }
 
 int wresize(WINDOW *win, int nlines, int ncols) {

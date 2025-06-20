@@ -166,6 +166,17 @@ whline(win, '-', 10); /* horizontal line */
 wvline(win, '|', 5);  /* vertical line */
 ```
 
+## Inserting text
+
+Characters and strings can be inserted before the cursor using
+`winsch(win, ch)` and `winsstr(win, str)`. Existing cells on the line shift to
+the right and the last character is dropped. The cursor position itself is
+unchanged. Wrappers `insch`, `mvwinsch`, `mvinsch`, `insstr` and `mvinsstr`
+mirror the behaviour of the output helpers.
+
+Only single byte characters are currently supported. Strings longer than the
+remaining space on the line are truncated.
+
 ## Refreshing windows
 
 Call `refresh()` to write the full screen to the terminal. When only a

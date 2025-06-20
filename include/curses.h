@@ -71,6 +71,14 @@ int werase(WINDOW *win);
 int wclear(WINDOW *win);
 int wclrtobot(WINDOW *win);
 int wclrtoeol(WINDOW *win);
+int winsch(WINDOW *win, char ch);
+int mvwinsch(WINDOW *win, int y, int x, char ch);
+int insch(char ch);
+int mvinsch(int y, int x, char ch);
+int winsstr(WINDOW *win, const char *str);
+int mvwinsstr(WINDOW *win, int y, int x, const char *str);
+int insstr(const char *str);
+int mvinsstr(int y, int x, const char *str);
 int copywin(WINDOW *src, WINDOW *dst,
             int sminrow, int smincol,
             int dminrow, int dmincol,
