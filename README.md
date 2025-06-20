@@ -78,10 +78,12 @@ repaint everything.
 
 ## Clearing windows
 
-`wclear(win)` erases all contents of a window. `wclrtoeol(win)` blanks
-from the cursor to the end of the current line and `wclrtobot(win)` clears
-from the cursor to the bottom of the window. These helpers modify only the
-target window's backing buffers.
+`wclear(win)` erases all contents of a window. `werase(win)` performs the same
+blanking without forcing a full terminal clear. The convenience wrapper
+`erase()` operates on `stdscr`. `wclrtoeol(win)` blanks from the cursor to the
+end of the current line and `wclrtobot(win)` clears from the cursor to the
+bottom of the window. These helpers modify only the target window's backing
+buffers.
 
 ## Copying windows
 

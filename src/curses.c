@@ -145,3 +145,7 @@ int flash(void) {
     fputs("\x1b[?5h\x1b[?5l", stdout);
     return fflush(stdout);
 }
+
+int erase(void) {
+    return werase(stdscr);
+}

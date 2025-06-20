@@ -371,6 +371,39 @@ int wrefresh(WINDOW *win) {
     return fflush(stdout);
 }
 
+/* erase a window's contents without forcing a terminal clear */
+int werase(WINDOW *win) {
+    if (!win)
+        return -1;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        for (int r = 0; r < win->maxy; ++r) {
+            int rr = win->pad_y + r;
+            if (rr >= root->maxy)
+                break;
+            for (int c = 0; c < win->maxx && win->pad_x + c < root->maxx; ++c) {
+                int cc = win->pad_x + c;
+                root->pad_buf[rr][cc] = ' ';
+                root->pad_attr[rr][cc] = win->attr;
+            }
+        }
+    } else {
+        char *spaces = malloc(win->maxx + 1);
+        if (!spaces)
+            return -1;
+        memset(spaces, ' ', win->maxx);
+        spaces[win->maxx] = '\0';
+        for (int r = 0; r < win->maxy; ++r)
+            _vc_screen_puts(win->begy + r, win->begx, spaces, win->attr);
+        free(spaces);
+    }
+
+    win->cury = 0;
+    win->curx = 0;
+    return 0;
+}
+
 /* clear the entire window by writing spaces into its backing buffer */
 int wclear(WINDOW *win) {
     if (!win)

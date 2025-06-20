@@ -54,6 +54,7 @@ int vline(char ch, int n);
 int wresize(WINDOW *win, int nlines, int ncols);
 int resizeterm(int lines, int cols);
 int wrefresh(WINDOW *win);
+int werase(WINDOW *win);
 int wclear(WINDOW *win);
 int wclrtobot(WINDOW *win);
 int wclrtoeol(WINDOW *win);
@@ -64,6 +65,7 @@ int copywin(WINDOW *src, WINDOW *dst,
             int overlay);
 int overlay(WINDOW *src, WINDOW *dst);
 int overwrite(WINDOW *src, WINDOW *dst);
+int erase(void);
 
 /* --- Convenience macros ---------------------------------------------- */
 #define getcury(win)      ((win)->cury)
