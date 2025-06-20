@@ -95,7 +95,42 @@ int addch(char ch) {
     return waddch(stdscr, ch);
 }
 
+int mvaddch(int y, int x, char ch) {
+    return mvwaddch(stdscr, y, x, ch);
+}
+
+int mvaddstr(int y, int x, const char *str) {
+    return mvwaddstr(stdscr, y, x, str);
+}
+
 int printw(const char *fmt, ...) {
+    va_list ap, ap_copy;
+    va_start(ap, fmt);
+    va_copy(ap_copy, ap);
+    int len = vsnprintf(NULL, 0, fmt, ap_copy);
+    va_end(ap_copy);
+    if (len < 0) {
+        va_end(ap);
+        return -1;
+    }
+
+    char *buf = malloc((size_t)len + 1);
+    if (!buf) {
+        va_end(ap);
+        return -1;
+    }
+
+    vsnprintf(buf, (size_t)len + 1, fmt, ap);
+    va_end(ap);
+    int r = waddstr(stdscr, buf);
+    free(buf);
+    return r;
+}
+
+int mvprintw(int y, int x, const char *fmt, ...) {
+    if (move(y, x) == -1)
+        return -1;
+
     va_list ap, ap_copy;
     va_start(ap, fmt);
     va_copy(ap_copy, ap);

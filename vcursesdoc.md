@@ -44,6 +44,20 @@ wprintw(win, "Value %d", i);
 printw("Hello %s", name);
 ```
 
+### Moving output
+
+Several helpers combine cursor movement with output. They return an error if
+the target position is outside the window.
+
+```c
+int mvwaddch(WINDOW *win, int y, int x, char ch);
+int mvaddch(int y, int x, char ch);       /* stdscr */
+int mvwaddstr(WINDOW *win, int y, int x, const char *str);
+int mvaddstr(int y, int x, const char *str);
+int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...);
+int mvprintw(int y, int x, const char *fmt, ...);  /* stdscr */
+```
+
 ## Color customization
 
 Call `start_color()` to enable color handling. The RGB components of the

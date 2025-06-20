@@ -90,6 +90,50 @@ START_TEST(test_move_and_wrappers)
 }
 END_TEST
 
+START_TEST(test_mvwaddch_sets_position)
+{
+    WINDOW *w = newwin(2, 3, 0, 0);
+    ck_assert_int_eq(mvwaddch(w, 1, 1, 'z'), 0);
+    ck_assert_int_eq(w->cury, 1);
+    ck_assert_int_eq(w->curx, 2);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_mvaddstr_wrapper)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(2, 5, 0, 0);
+    ck_assert_int_eq(mvaddstr(0, 1, "hi"), 0);
+    ck_assert_int_eq(stdscr->cury, 0);
+    ck_assert_int_eq(stdscr->curx, 3);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
+START_TEST(test_mvwprintw_basic)
+{
+    WINDOW *w = newwin(2, 6, 0, 0);
+    ck_assert_int_eq(mvwprintw(w, 1, 2, "%s", "a"), 0);
+    ck_assert_int_eq(w->cury, 1);
+    ck_assert_int_eq(w->curx, 3);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_mvprintw_wrapper)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(2, 6, 0, 0);
+    ck_assert_int_eq(mvprintw(1, 2, "%d", 5), 0);
+    ck_assert_int_eq(stdscr->cury, 1);
+    ck_assert_int_eq(stdscr->curx, 3);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 START_TEST(test_subwin_parent)
 {
     WINDOW *p = newwin(10, 20, 0, 0);
@@ -159,6 +203,10 @@ Suite *window_suite(void)
     tcase_add_test(tc, test_waddstr_null);
     tcase_add_test(tc, test_waddch_updates_cursor);
     tcase_add_test(tc, test_move_and_wrappers);
+    tcase_add_test(tc, test_mvwaddch_sets_position);
+    tcase_add_test(tc, test_mvaddstr_wrapper);
+    tcase_add_test(tc, test_mvwprintw_basic);
+    tcase_add_test(tc, test_mvprintw_wrapper);
     tcase_add_test(tc, test_subwin_parent);
     tcase_add_test(tc, test_derwin_relative);
     tcase_add_test(tc, test_wcolor_set_pair);
