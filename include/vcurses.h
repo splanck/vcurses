@@ -18,6 +18,7 @@ typedef struct window {
     int pad_y, pad_x; /* offset into root pad */
     char **pad_buf; /* backing buffer for pads */
     int **pad_attr; /* attribute buffer for pads */
+    unsigned char *dirty; /* per-line refresh flags */
 } WINDOW;
 
 /* Color definitions */
