@@ -166,13 +166,26 @@ whline(win, '-', 10); /* horizontal line */
 wvline(win, '|', 5);  /* vertical line */
 ```
 
-## Inserting text
+## Inserting and deleting characters
 
 Characters and strings can be inserted before the cursor using
 `winsch(win, ch)` and `winsstr(win, str)`. Existing cells on the line shift to
 the right and the last character is dropped. The cursor position itself is
 unchanged. Wrappers `insch`, `mvwinsch`, `mvinsch`, `insstr` and `mvinsstr`
 mirror the behaviour of the output helpers.
+
+`wdelch(win)` removes the character under the cursor, shifting the remainder of
+the line left and filling the final position with a space. Wrappers `delch`,
+`mvwdelch` and `mvdelch` behave analogously.
+
+```c
+WINDOW *w = newwin(1, 8, 0, 0);
+waddstr(w, "hello");
+wmove(w, 0, 2);
+winsch(w, 'X');   /* heXllo */
+wmove(w, 0, 1);
+wdelch(w);        /* hXllo */
+```
 
 Only single byte characters are currently supported. Strings longer than the
 remaining space on the line are truncated.

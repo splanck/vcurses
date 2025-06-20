@@ -166,3 +166,14 @@ wprintw(win, "Count: %d", n);
 printw("%s\n", msg);
 ```
 
+## Inserting and deleting characters
+
+Characters can be inserted before the cursor with `winsch` or `winsstr`.
+Existing cells shift to the right and the cursor position is unchanged.  The
+wrappers `insch`, `mvwinsch`, `mvinsch`, `insstr` and `mvinsstr` provide the
+same behaviour for `stdscr` or with an explicit position.
+
+To remove the character at the cursor use `wdelch(win)`.  The remainder of the
+line moves left and the final cell is filled with a space.  Convenience
+wrappers `delch`, `mvwdelch` and `mvdelch` behave like the insertion helpers.
+

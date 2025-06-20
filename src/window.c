@@ -613,6 +613,20 @@ static int insert_char_screen(int y, int x, int max, char ch, int attr)
     return 0;
 }
 
+static int delete_char_screen(int y, int x, int max, int attr)
+{
+    for (int i = 0; i < max - 1; ++i) {
+        char next = ' ';
+        int next_attr = attr;
+        _vc_screen_get_cell(y, x + i + 1, &next, &next_attr);
+        char buf[2] = { next, 0 };
+        _vc_screen_puts(y, x + i, buf, next_attr);
+    }
+    char buf[2] = { ' ', 0 };
+    _vc_screen_puts(y, x + max - 1, buf, attr);
+    return 0;
+}
+
 int winsch(WINDOW *win, char ch)
 {
     if (!win)
@@ -661,6 +675,56 @@ int insch(char ch)
 int mvinsch(int y, int x, char ch)
 {
     return mvwinsch(stdscr, y, x, ch);
+}
+
+int wdelch(WINDOW *win)
+{
+    if (!win)
+        return -1;
+    int len = win->maxx - win->curx;
+    if (len <= 0)
+        return -1;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int rr = win->pad_y + win->cury;
+        int cc = win->pad_x + win->curx;
+        if (rr >= root->maxy || cc >= root->maxx)
+            return -1;
+        if (cc + len > root->maxx)
+            len = root->maxx - cc;
+        for (int i = 0; i < len - 1; ++i) {
+            root->pad_buf[rr][cc + i] = root->pad_buf[rr][cc + i + 1];
+            root->pad_attr[rr][cc + i] = root->pad_attr[rr][cc + i + 1];
+        }
+        root->pad_buf[rr][cc + len - 1] = ' ';
+        root->pad_attr[rr][cc + len - 1] = win->attr;
+    } else {
+        int row = win->begy + win->cury;
+        int col = win->begx + win->curx;
+        if (col + len > COLS)
+            len = COLS - col;
+        delete_char_screen(row, col, len, win->attr);
+    }
+    mark_dirty(win, win->cury, 1);
+    return 0;
+}
+
+int mvwdelch(WINDOW *win, int y, int x)
+{
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return wdelch(win);
+}
+
+int delch(void)
+{
+    return wdelch(stdscr);
+}
+
+int mvdelch(int y, int x)
+{
+    return mvwdelch(stdscr, y, x);
 }
 
 int winsstr(WINDOW *win, const char *str)
