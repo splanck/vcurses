@@ -16,6 +16,13 @@ is typical for command prompts.
 `getstr` reads from `stdscr`, while `wgetstr` accepts the window to read from.
 Both respect keypad mode, returning special key codes if keypad is enabled.
 
+## Pushing input with ungetch
+
+Characters may be placed back onto the input stream using `ungetch`.
+The next call to `getch` or `wgetch` will return the pushed value
+instead of reading from the terminal.
+
+
 ## Formatted output
 
 Use `wprintw(win, fmt, ...)` to print formatted text directly into a window.

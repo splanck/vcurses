@@ -45,6 +45,7 @@ after calling `start_color()`.
 - `nodelay(win, true)` makes reads non-blocking.
 - `wtimeout(win, ms)` specifies a delay in milliseconds for the next read.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
+- `ungetch(ch)` pushes a character back so the next `getch` returns it.
 
 ## Terminal modes
 
