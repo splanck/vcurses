@@ -64,6 +64,16 @@ noraw();
 restore normal signal processing and `raw()` to enable it again. The
 `cbreak()` and `nocbreak()` helpers only toggle line buffering.
 
+### Alerts
+
+```c
+int beep(void);
+int flash(void);
+```
+
+`beep()` outputs an audible bell. `flash()` triggers a visual bell using ANSI
+escape sequences when supported.
+
 ### Windows
 
 Window creation and movement routines:

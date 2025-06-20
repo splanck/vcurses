@@ -49,3 +49,8 @@ restore normal signal handling and `raw()` to enable raw mode again.
 Line buffering and echo can also be toggled with `cbreak()`/
 `nocbreak()` and `echo()`/`noecho()`.
 
+## Alerts
+
+`beep()` writes an audible bell (\a) to the terminal. `flash()` emits a brief
+visual flash using ANSI escape codes when supported.
+

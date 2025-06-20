@@ -114,6 +114,8 @@ int wattrset(WINDOW *win, int attrs);
 int color_set(short pair, void *opts);
 int wcolor_set(WINDOW *win, short pair, void *opts);
 int curs_set(int visibility);
+int beep(void);
+int flash(void);
 
 /* Internal helper used by the library */
 void _vcurses_apply_attr(int attr);

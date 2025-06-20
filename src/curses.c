@@ -108,3 +108,13 @@ int curs_set(int visibility) {
     fflush(stdout);
     return prev;
 }
+
+int beep(void) {
+    fputc('\a', stdout);
+    return fflush(stdout);
+}
+
+int flash(void) {
+    fputs("\x1b[?5h\x1b[?5l", stdout);
+    return fflush(stdout);
+}
