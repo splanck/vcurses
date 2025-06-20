@@ -166,6 +166,7 @@ The header defines color constants and attribute masks:
 #define A_COLOR       0xFF00
 #define A_BOLD        0x010000
 #define A_UNDERLINE   0x020000
+#define A_REVERSE     0x040000
 ```
 
 Use `start_color()` once after initialization, define pairs with `init_pair()` and query them with `pair_content()`. The RGB components of the basic colors can be obtained using `color_content()`. Apply pairs with the attribute functions above.

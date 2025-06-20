@@ -38,6 +38,19 @@ defined pair. Use `pair_content(pair, &fg, &bg)` to query a pair and
 color. Individual colors can be redefined with `init_color(color, r, g, b)`
 after calling `start_color()`.
 
+## Text attributes
+
+Attributes modify how text is displayed. `vcurses` currently supports
+`A_BOLD`, `A_UNDERLINE` and `A_REVERSE`. They can be combined with color
+pairs using `attron`/`wattron` and disabled with `attroff`/`wattroff`.
+Reverse video swaps the foreground and background colors:
+
+```c
+wattron(win, A_REVERSE);
+waddstr(win, "reversed\n");
+wattroff(win, A_REVERSE);
+```
+
 ## Input timeouts
 
 `wgetch()` can wait for input in three ways:

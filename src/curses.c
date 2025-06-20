@@ -35,6 +35,8 @@ static void apply_attr(int attr) {
         printf("\x1b[1m");
     if (attr & A_UNDERLINE)
         printf("\x1b[4m");
+    if (attr & A_REVERSE)
+        printf("\x1b[7m");
 }
 
 void _vcurses_apply_attr(int attr) {
