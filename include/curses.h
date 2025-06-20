@@ -18,6 +18,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
 int delwin(WINDOW *win);
 WINDOW *subwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
 WINDOW *derwin(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
+int mvwin(WINDOW *win, int y, int x);
 /* Pad management */
 WINDOW *newpad(int nlines, int ncols);
 WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x);
