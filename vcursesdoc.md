@@ -130,6 +130,8 @@ redrawing:
 
 ```c
 int wclear(WINDOW *win);      /* blank the entire window */
+int werase(WINDOW *win);      /* clear window without full screen reset */
+int erase(void);              /* stdscr wrapper for werase */
 int wclrtoeol(WINDOW *win);   /* clear to end of current line */
 int wclrtobot(WINDOW *win);   /* clear to bottom of window */
 ```
@@ -137,6 +139,8 @@ int wclrtobot(WINDOW *win);   /* clear to bottom of window */
 Only the specified window's backing buffers are modified. The changes become
 visible after calling `wrefresh()` or `prefresh()` as appropriate. Clearing
 operations honour the window's current attributes when filling spaces.
+Use `werase()` (or `erase()` for `stdscr`) when you simply need to blank the
+buffers without forcing a full terminal clear on the next refresh.
 
 ## Copying windows
 
