@@ -70,6 +70,39 @@ START_TEST(test_resize_event)
 }
 END_TEST
 
+START_TEST(test_wgetnstr_limits_length)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    ungetch('\n');
+    ungetch('c');
+    ungetch('b');
+    ungetch('a');
+    char buf[3];
+    ck_assert_int_eq(wgetnstr(w, buf, 2), 0);
+    ck_assert_str_eq(buf, "ab");
+    nodelay(w, true);
+    ck_assert_int_eq(wgetch(w), -1);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_getnstr_wrapper)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(1,1,0,0);
+    ungetch('\n');
+    ungetch('y');
+    ungetch('x');
+    char buf[3];
+    ck_assert_int_eq(getnstr(buf, 2), 0);
+    ck_assert_str_eq(buf, "xy");
+    nodelay(stdscr, true);
+    ck_assert_int_eq(getch(), -1);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -79,6 +112,8 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_ungetch_single);
     tcase_add_test(tc, test_ungetch_stack_order);
     tcase_add_test(tc, test_resize_event);
+    tcase_add_test(tc, test_wgetnstr_limits_length);
+    tcase_add_test(tc, test_getnstr_wrapper);
     suite_add_tcase(s, tc);
     return s;
 }

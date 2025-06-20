@@ -209,8 +209,44 @@ int wgetstr(WINDOW *win, char *buf) {
     return -1;
 }
 
+int wgetnstr(WINDOW *win, char *buf, int n) {
+    if (!win || !buf || n <= 0)
+        return -1;
+
+    int ch;
+    int count = 0;
+
+    while (count < n && (ch = wgetch(win)) != -1) {
+        if (ch == '\n' || ch == '\r') {
+            buf[count] = '\0';
+            return 0;
+        }
+        buf[count++] = (char)ch;
+    }
+
+    if (ch == -1)
+        return -1;
+
+    buf[count] = '\0';
+
+    if (count == n) {
+        while ((ch = wgetch(win)) != -1) {
+            if (ch == '\n' || ch == '\r')
+                break;
+        }
+        if (ch == -1)
+            return -1;
+    }
+
+    return 0;
+}
+
 int getstr(char *buf) {
     return wgetstr(stdscr, buf);
+}
+
+int getnstr(char *buf, int n) {
+    return wgetnstr(stdscr, buf, n);
 }
 
 int keypad(WINDOW *win, bool yes) {
