@@ -10,6 +10,7 @@ Suite *copy_suite(void);
 Suite *attr_suite(void);
 Suite *erase_suite(void);
 Suite *touch_suite(void);
+Suite *clear_suite(void);
 
 START_TEST(test_newwin_basic)
 {
@@ -241,6 +242,7 @@ int main(void)
     Suite *s8 = attr_suite();
     Suite *s9 = erase_suite();
     Suite *s10 = touch_suite();
+    Suite *s11 = clear_suite();
     SRunner *sr = srunner_create(s1);
     srunner_add_suite(sr, s2);
     srunner_add_suite(sr, s3);
@@ -251,6 +253,7 @@ int main(void)
     srunner_add_suite(sr, s8);
     srunner_add_suite(sr, s9);
     srunner_add_suite(sr, s10);
+    srunner_add_suite(sr, s11);
     srunner_run_all(sr, CK_ENV); // use CK_ENV to get TAP or not
     int nf = srunner_ntests_failed(sr);
     srunner_free(sr);
