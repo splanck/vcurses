@@ -104,6 +104,9 @@ int start_color(void);
 int init_pair(short pair, short fg, short bg);
 int pair_content(short pair, short *fg, short *bg);
 int color_content(short color, short *r, short *g, short *b);
+int init_color(short color, short r, short g, short b);
+int has_colors(void);
+int can_change_color(void);
 
 int attron(int attrs);
 int attroff(int attrs);
