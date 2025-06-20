@@ -29,3 +29,20 @@ Each component ranges from 0 to 1000. Use `color_content(color, &r, &g, &b)`
 to read back the stored values. `has_colors()` reports whether color mode is
 active and `can_change_color()` always returns true in this implementation.
 
+## Mouse events
+
+Enable mouse reporting by calling `mousemask()` with the desired button masks.
+When keypad mode is active, `wgetch()` returns `KEY_MOUSE` whenever a supported
+mouse event occurs. Retrieve the event details with `getmouse()`:
+
+```c
+MEVENT me;
+mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED, NULL);
+
+int ch = wgetch(stdscr);
+if (ch == KEY_MOUSE && getmouse(&me) == 0) {
+    /* me.x and me.y are zero-based coordinates */
+    handle_click(me.bstate, me.x, me.y);
+}
+```
+
