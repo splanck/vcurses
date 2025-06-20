@@ -50,6 +50,7 @@ int nodelay(WINDOW *win, bool bf);
 int wtimeout(WINDOW *win, int delay);
 int halfdelay(int tenths);
 int scrollok(WINDOW *win, bool bf);
+int clearok(WINDOW *win, bool bf);
 int wscrl(WINDOW *win, int lines);
 int scroll(WINDOW *win);
 int wborder(WINDOW *win,

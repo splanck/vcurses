@@ -100,6 +100,9 @@ end of the current line and `wclrtobot(win)` clears from the cursor to the
 bottom of the window. These helpers modify only the target window's backing
 buffers.
 
+`clearok(win, true)` requests that the next `wrefresh(win)` resets the screen
+buffer before drawing, effectively clearing the terminal.
+
 ## Copying windows
 
 `overwrite(src, dst)` copies the entire contents of one window to another.

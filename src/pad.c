@@ -26,6 +26,7 @@ WINDOW *newpad(int nlines, int ncols) {
     win->parent = NULL;
     win->keypad_mode = 0;
     win->scroll = 0;
+    win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
     win->is_pad = 1;
@@ -81,6 +82,7 @@ WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x) {
     win->parent = orig;
     win->keypad_mode = 0;
     win->scroll = 0;
+    win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
     win->is_pad = 1;

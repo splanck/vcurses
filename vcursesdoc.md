@@ -196,6 +196,19 @@ operations honour the window's current attributes when filling spaces.
 Use `werase()` (or `erase()` for `stdscr`) when you simply need to blank the
 buffers without forcing a full terminal clear on the next refresh.
 
+Calling `clearok(win, true)` marks a window so that the next `wrefresh(win)`
+resets the internal screen buffer and clears the terminal before redrawing.
+The flag is cleared afterward. This is helpful when an external program has
+disturbed the display or you simply want to ensure a blank screen.
+
+```c
+/* restore a pristine display */
+wrefresh(stdscr);
+system("some-command");
+clearok(stdscr, true);
+wrefresh(stdscr); /* screen is cleared */
+```
+
 ## Copying windows
 
 Use `overwrite(src, dst)` to duplicate the contents of one window into

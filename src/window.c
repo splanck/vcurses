@@ -38,6 +38,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->parent = NULL;
     win->keypad_mode = 0;
     win->scroll = 0;
+    win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
     win->is_pad = 0;
@@ -228,6 +229,13 @@ int scrollok(WINDOW *win, bool bf) {
     if (!win)
         return -1;
     win->scroll = bf ? 1 : 0;
+    return 0;
+}
+
+int clearok(WINDOW *win, bool bf) {
+    if (!win)
+        return -1;
+    win->clearok = bf ? 1 : 0;
     return 0;
 }
 
@@ -423,6 +431,12 @@ extern void _vc_screen_refresh_region(int top, int left, int height, int width);
 int wrefresh(WINDOW *win) {
     if (!win)
         return -1;
+    if (win->clearok) {
+        extern void _vc_screen_free(void);
+        _vc_screen_free();
+        clear();
+        win->clearok = 0;
+    }
     if (!win->dirty) {
         _vc_screen_refresh_region(win->begy, win->begx, win->maxy, win->maxx);
     } else {
