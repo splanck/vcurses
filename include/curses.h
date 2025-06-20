@@ -50,6 +50,8 @@ int whline(WINDOW *win, char ch, int n);
 int hline(char ch, int n);
 int wvline(WINDOW *win, char ch, int n);
 int vline(char ch, int n);
+int wresize(WINDOW *win, int nlines, int ncols);
+int resizeterm(int lines, int cols);
 int wrefresh(WINDOW *win);
 int wclear(WINDOW *win);
 int wclrtobot(WINDOW *win);

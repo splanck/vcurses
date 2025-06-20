@@ -469,3 +469,79 @@ int wclrtobot(WINDOW *win) {
     }
     return 0;
 }
+
+int wresize(WINDOW *win, int nlines, int ncols) {
+    if (!win || nlines < 0 || ncols < 0)
+        return -1;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        if (!win->parent) {
+            char **nbuf = malloc(sizeof(char *) * nlines);
+            int **nattr = malloc(sizeof(int *) * nlines);
+            if (!nbuf || !nattr) {
+                free(nbuf);
+                free(nattr);
+                return -1;
+            }
+            for (int r = 0; r < nlines; ++r) {
+                nbuf[r] = malloc(ncols);
+                nattr[r] = malloc(sizeof(int) * ncols);
+                if (!nbuf[r] || !nattr[r]) {
+                    for (int i = 0; i <= r; ++i) {
+                        if (i < r) {
+                            free(nbuf[i]);
+                            free(nattr[i]);
+                        }
+                    }
+                    free(nbuf);
+                    free(nattr);
+                    return -1;
+                }
+            }
+
+            int copy_rows = (nlines < root->maxy) ? nlines : root->maxy;
+            int copy_cols = (ncols < root->maxx) ? ncols : root->maxx;
+            for (int r = 0; r < nlines; ++r) {
+                for (int c = 0; c < ncols; ++c) {
+                    if (r < copy_rows && c < copy_cols) {
+                        nbuf[r][c] = root->pad_buf[r][c];
+                        nattr[r][c] = root->pad_attr[r][c];
+                    } else {
+                        nbuf[r][c] = ' ';
+                        nattr[r][c] = win->attr;
+                    }
+                }
+            }
+
+            for (int r = 0; r < root->maxy; ++r) {
+                free(root->pad_buf[r]);
+                free(root->pad_attr[r]);
+            }
+            free(root->pad_buf);
+            free(root->pad_attr);
+            root->pad_buf = nbuf;
+            root->pad_attr = nattr;
+            root->maxy = nlines;
+            root->maxx = ncols;
+        } else {
+            if (win->pad_y + nlines > root->maxy)
+                nlines = root->maxy - win->pad_y;
+            if (win->pad_x + ncols > root->maxx)
+                ncols = root->maxx - win->pad_x;
+        }
+    } else {
+        if (win->begy + nlines > LINES)
+            nlines = LINES - win->begy;
+        if (win->begx + ncols > COLS)
+            ncols = COLS - win->begx;
+    }
+
+    win->maxy = nlines;
+    win->maxx = ncols;
+    if (win->cury >= win->maxy)
+        win->cury = win->maxy ? win->maxy - 1 : 0;
+    if (win->curx >= win->maxx)
+        win->curx = win->maxx ? win->maxx - 1 : 0;
+    return 0;
+}

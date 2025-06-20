@@ -81,6 +81,12 @@ exposed lines are cleared using the window's current attributes.
 the visible screen. Coordinates are clamped when necessary to keep the entire
 window on screen.
 
+## Resizing
+
+`wresize(win, lines, cols)` changes the dimensions of a window. When used on a
+pad, the backing buffers are reallocated. Call `resizeterm(lines, cols)` to
+update `stdscr` and all windows after the terminal size changes.
+
 ## Mouse input
 
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when
