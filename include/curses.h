@@ -43,6 +43,10 @@ int wborder(WINDOW *win,
             char ls, char rs, char ts, char bs,
             char tl, char tr, char bl, char br);
 int box(WINDOW *win, char verch, char horch);
+int whline(WINDOW *win, char ch, int n);
+int hline(char ch, int n);
+int wvline(WINDOW *win, char ch, int n);
+int vline(char ch, int n);
 
 /* --- Mouse support ---------------------------------------------------- */
 typedef unsigned long mmask_t;
