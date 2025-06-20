@@ -33,6 +33,18 @@ Characters may be placed back onto the input stream using `ungetch`.
 The next call to `getch` or `wgetch` will return the pushed value
 instead of reading from the terminal.
 
+## Key codes
+
+When keypad mode is enabled, `wgetch()` translates certain key presses into
+constants defined in `<curses.h>`.  These include:
+
+- `KEY_UP`, `KEY_DOWN`, `KEY_LEFT`, `KEY_RIGHT`
+- `KEY_HOME`, `KEY_END`, `KEY_NPAGE`, `KEY_PPAGE`
+- `KEY_IC`, `KEY_DC`, `KEY_BACKSPACE`, `KEY_ENTER`
+- `KEY_F1`&ndash;`KEY_F12`
+- `KEY_MOUSE` and `KEY_RESIZE`
+
+Regular printable characters are returned unchanged.
 
 ## Formatted output
 

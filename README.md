@@ -65,6 +65,11 @@ wattroff(win, A_REVERSE);
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached.
 
+When keypad mode is enabled with `keypad(win, true)`, `wgetch()` maps
+special keys to predefined constants such as `KEY_UP`, `KEY_F1`,
+`KEY_BACKSPACE` and `KEY_ENTER`.  A full list is available in
+[vcursesdoc.md](vcursesdoc.md#key-codes).
+
 ## Terminal modes
 
 `initscr()` enters raw mode with echo disabled. Call `noraw()` to
