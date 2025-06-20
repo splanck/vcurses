@@ -59,6 +59,8 @@ wattroff(win, A_REVERSE);
 - `wtimeout(win, ms)` specifies a delay in milliseconds for the next read.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
+Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
+length has been reached.
 
 ## Terminal modes
 

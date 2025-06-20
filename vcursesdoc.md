@@ -16,6 +16,17 @@ is typical for command prompts.
 `getstr` reads from `stdscr`, while `wgetstr` accepts the window to read from.
 Both respect keypad mode, returning special key codes if keypad is enabled.
 
+## Limiting input with getnstr
+
+When a buffer has a fixed size, use `getnstr` or `wgetnstr` to cap the number
+of characters read. The `n` argument specifies the maximum number of
+characters stored, excluding the terminating `\0`.
+
+```c
+char buf[4];
+getnstr(buf, 3); /* reads up to three characters */
+```
+
 ## Pushing input with ungetch
 
 Characters may be placed back onto the input stream using `ungetch`.

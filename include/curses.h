@@ -37,6 +37,8 @@ int getch(void);
 int ungetch(int ch);
 int wgetstr(WINDOW *win, char *buf);
 int getstr(char *buf);
+int wgetnstr(WINDOW *win, char *buf, int n);
+int getnstr(char *buf, int n);
 int keypad(WINDOW *win, bool yes);
 int nodelay(WINDOW *win, bool bf);
 int wtimeout(WINDOW *win, int delay);
