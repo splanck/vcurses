@@ -117,6 +117,11 @@ Only the specified window's backing buffers are modified. The changes become
 visible after calling `wrefresh()` or `prefresh()` as appropriate. Clearing
 operations honour the window's current attributes when filling spaces.
 
+## Moving windows
+
+Use `mvwin(win, y, x)` to reposition a window. The coordinates are
+automatically adjusted so the entire window remains visible on screen.
+
 ## Window coordinate macros
 
 `vcurses` defines a set of macros that mirror those found in ncurses to

@@ -75,6 +75,12 @@ Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
 value scrolls the region up while a negative value scrolls it down. Newly
 exposed lines are cleared using the window's current attributes.
 
+## Moving windows
+
+`mvwin(win, y, x)` repositions a window so its upper-left corner falls within
+the visible screen. Coordinates are clamped when necessary to keep the entire
+window on screen.
+
 ## Mouse input
 
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when

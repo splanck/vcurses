@@ -79,6 +79,28 @@ static WINDOW *pad_root(WINDOW *pad) {
     return r;
 }
 
+int mvwin(WINDOW *win, int y, int x) {
+    if (!win)
+        return -1;
+
+    if (y < 0)
+        y = 0;
+    if (x < 0)
+        x = 0;
+    if (y + win->maxy > LINES)
+        y = (LINES > win->maxy) ? LINES - win->maxy : 0;
+    if (x + win->maxx > COLS)
+        x = (COLS > win->maxx) ? COLS - win->maxx : 0;
+
+    win->begy = y;
+    win->begx = x;
+    if (win->cury >= win->maxy)
+        win->cury = win->maxy ? win->maxy - 1 : 0;
+    if (win->curx >= win->maxx)
+        win->curx = win->maxx ? win->maxx - 1 : 0;
+    return 0;
+}
+
 
 int wmove(WINDOW *win, int y, int x) {
     if (!win) {
