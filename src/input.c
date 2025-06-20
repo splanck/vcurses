@@ -6,6 +6,11 @@
 /* mouse event queue helper */
 extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
 
+/* simple push-back stack for characters */
+#define INPUT_QSIZE 32
+static int input_queue[INPUT_QSIZE];
+static int input_qcount = 0;
+
 static int read_number(int *out, char *delim)
 {
     char ch;
@@ -156,6 +161,9 @@ int wgetch(WINDOW *win) {
     if (!win)
         return -1;
 
+    if (input_qcount > 0)
+        return input_queue[--input_qcount];
+
     char c;
     int timeout = win->delay;
 
@@ -175,6 +183,13 @@ int wgetch(WINDOW *win) {
 
 int getch(void) {
     return wgetch(stdscr);
+}
+
+int ungetch(int ch) {
+    if (input_qcount >= INPUT_QSIZE)
+        return -1;
+    input_queue[input_qcount++] = ch;
+    return 0;
 }
 
 int wgetstr(WINDOW *win, char *buf) {

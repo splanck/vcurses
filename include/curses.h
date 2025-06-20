@@ -34,6 +34,7 @@ int wprintw(WINDOW *win, const char *fmt, ...);
 int printw(const char *fmt, ...);
 int wgetch(WINDOW *win);
 int getch(void);
+int ungetch(int ch);
 int wgetstr(WINDOW *win, char *buf);
 int getstr(char *buf);
 int keypad(WINDOW *win, bool yes);
