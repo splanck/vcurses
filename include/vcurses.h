@@ -40,6 +40,9 @@ typedef struct window {
 #define A_BOLD        0x010000
 #define A_UNDERLINE   0x020000
 #define A_REVERSE     0x040000
+#define A_BLINK       0x080000
+#define A_DIM         0x100000
+#define A_STANDOUT    0x200000
 
 int vc_init(void);
 WINDOW *initscr(void);
