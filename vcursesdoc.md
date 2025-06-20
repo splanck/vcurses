@@ -92,3 +92,18 @@ Call `refresh()` to write the full screen to the terminal. When only a
 portion of the display has changed, `wrefresh(win)` flushes just that
 window's area.
 
+## Clearing window regions
+
+Three helpers manipulate the contents of a window without immediately
+redrawing:
+
+```c
+int wclear(WINDOW *win);      /* blank the entire window */
+int wclrtoeol(WINDOW *win);   /* clear to end of current line */
+int wclrtobot(WINDOW *win);   /* clear to bottom of window */
+```
+
+Only the specified window's backing buffers are modified. The changes become
+visible after calling `wrefresh()` or `prefresh()` as appropriate. Clearing
+operations honour the window's current attributes when filling spaces.
+

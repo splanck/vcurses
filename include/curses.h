@@ -48,6 +48,9 @@ int hline(char ch, int n);
 int wvline(WINDOW *win, char ch, int n);
 int vline(char ch, int n);
 int wrefresh(WINDOW *win);
+int wclear(WINDOW *win);
+int wclrtobot(WINDOW *win);
+int wclrtoeol(WINDOW *win);
 
 /* --- Mouse support ---------------------------------------------------- */
 typedef unsigned long mmask_t;

@@ -318,3 +318,102 @@ int wrefresh(WINDOW *win) {
     printf("\x1b[%d;%dH", win->begy + win->cury + 1, win->begx + win->curx + 1);
     return fflush(stdout);
 }
+
+/* clear the entire window by writing spaces into its backing buffer */
+int wclear(WINDOW *win) {
+    if (!win)
+        return -1;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        for (int r = 0; r < win->maxy; ++r) {
+            int rr = win->pad_y + r;
+            if (rr >= root->maxy)
+                break;
+            for (int c = 0; c < win->maxx && win->pad_x + c < root->maxx; ++c) {
+                int cc = win->pad_x + c;
+                root->pad_buf[rr][cc] = ' ';
+                root->pad_attr[rr][cc] = win->attr;
+            }
+        }
+    } else {
+        char *spaces = malloc(win->maxx + 1);
+        if (!spaces)
+            return -1;
+        memset(spaces, ' ', win->maxx);
+        spaces[win->maxx] = '\0';
+        for (int r = 0; r < win->maxy; ++r)
+            _vc_screen_puts(win->begy + r, win->begx, spaces, win->attr);
+        free(spaces);
+    }
+
+    win->cury = 0;
+    win->curx = 0;
+    return 0;
+}
+
+/* clear from the cursor to end of line */
+int wclrtoeol(WINDOW *win) {
+    if (!win)
+        return -1;
+
+    int len = win->maxx - win->curx;
+    if (len <= 0)
+        return 0;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int rr = win->pad_y + win->cury;
+        int cc = win->pad_x + win->curx;
+        if (rr >= root->maxy || cc >= root->maxx)
+            return -1;
+        for (int c = 0; c < len && cc + c < root->maxx; ++c) {
+            root->pad_buf[rr][cc + c] = ' ';
+            root->pad_attr[rr][cc + c] = win->attr;
+        }
+    } else {
+        char *spaces = malloc(len + 1);
+        if (!spaces)
+            return -1;
+        memset(spaces, ' ', len);
+        spaces[len] = '\0';
+        _vc_screen_puts(win->begy + win->cury, win->begx + win->curx,
+                        spaces, win->attr);
+        free(spaces);
+    }
+    return 0;
+}
+
+/* clear from cursor to bottom of window */
+int wclrtobot(WINDOW *win) {
+    if (!win)
+        return -1;
+
+    for (int r = win->cury; r < win->maxy; ++r) {
+        int start = (r == win->cury) ? win->curx : 0;
+        int len = win->maxx - start;
+        if (len <= 0)
+            continue;
+        if (win->is_pad) {
+            WINDOW *root = pad_root(win);
+            int rr = win->pad_y + r;
+            int cc = win->pad_x + start;
+            if (rr >= root->maxy || cc >= root->maxx)
+                break;
+            for (int c = 0; c < len && cc + c < root->maxx; ++c) {
+                root->pad_buf[rr][cc + c] = ' ';
+                root->pad_attr[rr][cc + c] = win->attr;
+            }
+        } else {
+            char *spaces = malloc(len + 1);
+            if (!spaces)
+                return -1;
+            memset(spaces, ' ', len);
+            spaces[len] = '\0';
+            _vc_screen_puts(win->begy + r, win->begx + start,
+                            spaces, win->attr);
+            free(spaces);
+        }
+    }
+    return 0;
+}
