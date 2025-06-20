@@ -157,6 +157,10 @@ Single-value helpers like `getcurx(win)` and `getmaxy(win)` are also provided.
 `mvwaddch`, `mvaddch`, `mvwaddstr` and `mvaddstr` combine movement with
 character or string output.
 
+Insertion counterparts `winsch` and `winsstr` insert text before the current
+cursor position without moving it. Convenience wrappers `insch`, `mvwinsch`,
+`mvinsch`, `insstr` and `mvinsstr` are also available.
+
 ```c
 wprintw(win, "Count: %d", n);
 printw("%s\n", msg);
