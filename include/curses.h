@@ -56,6 +56,13 @@ int wrefresh(WINDOW *win);
 int wclear(WINDOW *win);
 int wclrtobot(WINDOW *win);
 int wclrtoeol(WINDOW *win);
+int copywin(WINDOW *src, WINDOW *dst,
+            int sminrow, int smincol,
+            int dminrow, int dmincol,
+            int dmaxrow, int dmaxcol,
+            int overlay);
+int overlay(WINDOW *src, WINDOW *dst);
+int overwrite(WINDOW *src, WINDOW *dst);
 
 /* --- Convenience macros ---------------------------------------------- */
 #define getcury(win)      ((win)->cury)

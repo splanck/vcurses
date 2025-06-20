@@ -226,3 +226,16 @@ void _vc_screen_scroll_region(int top, int left, int height, int width,
         }
     }
 }
+
+int _vc_screen_get_cell(int y, int x, char *ch, int *attr)
+{
+    if (ensure_buffer() == -1)
+        return -1;
+    if (y < 0 || y >= buf_rows || x < 0 || x >= buf_cols)
+        return -1;
+    if (ch)
+        *ch = screen_buf[y][x];
+    if (attr)
+        *attr = attr_buf[y][x];
+    return 0;
+}

@@ -69,6 +69,13 @@ from the cursor to the end of the current line and `wclrtobot(win)` clears
 from the cursor to the bottom of the window. These helpers modify only the
 target window's backing buffers.
 
+## Copying windows
+
+`overwrite(src, dst)` copies the entire contents of one window to another.
+`overlay(src, dst)` performs the same operation but skips space characters
+from the source so the destination shows through. Both functions operate
+on the windows' backing buffers and do not immediately redraw the screen.
+
 ## Scrolling
 
 Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
