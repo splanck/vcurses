@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 WINDOW *stdscr = NULL;
 
@@ -90,6 +91,30 @@ int addstr(const char *str) {
 
 int addch(char ch) {
     return waddch(stdscr, ch);
+}
+
+int printw(const char *fmt, ...) {
+    va_list ap, ap_copy;
+    va_start(ap, fmt);
+    va_copy(ap_copy, ap);
+    int len = vsnprintf(NULL, 0, fmt, ap_copy);
+    va_end(ap_copy);
+    if (len < 0) {
+        va_end(ap);
+        return -1;
+    }
+
+    char *buf = malloc((size_t)len + 1);
+    if (!buf) {
+        va_end(ap);
+        return -1;
+    }
+
+    vsnprintf(buf, (size_t)len + 1, fmt, ap);
+    va_end(ap);
+    int r = waddstr(stdscr, buf);
+    free(buf);
+    return r;
 }
 
 static int _cursor_state = 1;
