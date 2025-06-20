@@ -57,3 +57,8 @@ Line buffering and echo can also be toggled with `cbreak()`/
 `beep()` writes an audible bell (\a) to the terminal. `flash()` emits a brief
 visual flash using ANSI escape codes when supported.
 
+## Mouse input
+
+Mouse events can be enabled with `mousemask()` and read with `getmouse()` when
+`wgetch()` returns `KEY_MOUSE`.
+
