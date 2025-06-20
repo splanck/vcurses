@@ -80,6 +80,20 @@ exposed lines are cleared using the window's current attributes.
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when
 `wgetch()` returns `KEY_MOUSE`.
 
+## Window coordinate macros
+
+Several macros match the ncurses API for retrieving window positions. They
+expand to simple field accesses:
+
+```c
+int y, x;
+getyx(win, y, x);      /* cursor position */
+getbegyx(win, y, x);   /* window origin */
+getmaxyx(win, y, x);   /* window size */
+```
+
+Single-value helpers like `getcurx(win)` and `getmaxy(win)` are also provided.
+
 ## Formatted output
 
 `wprintw(win, fmt, ...)` works like `printf` but writes into a window.

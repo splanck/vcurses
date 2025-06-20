@@ -117,3 +117,23 @@ Only the specified window's backing buffers are modified. The changes become
 visible after calling `wrefresh()` or `prefresh()` as appropriate. Clearing
 operations honour the window's current attributes when filling spaces.
 
+## Window coordinate macros
+
+`vcurses` defines a set of macros that mirror those found in ncurses to
+inspect window geometry without function calls.
+
+```c
+getyx(win, y, x);      /* y = win->cury, x = win->curx */
+getbegyx(win, y, x);   /* origin of the window */
+getmaxyx(win, y, x);   /* size of the window */
+getparyx(win, y, x);   /* offsets relative to the parent or -1 */
+
+int cy = getcury(win); /* single-value forms */
+int bx = getbegx(win);
+```
+
+`getpary` and `getparx` compute the position of a subwindow relative to
+its parent and evaluate to `-1` if the window has no parent.  These
+macros operate purely on the `WINDOW` structure and therefore behave
+compatibly with applications written for ncurses.
+
