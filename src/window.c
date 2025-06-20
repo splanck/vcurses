@@ -7,6 +7,7 @@
 /* functions from resize.c */
 extern void _vc_register_window(WINDOW *win);
 extern void _vc_unregister_window(WINDOW *win);
+static int vwprintw_internal(WINDOW *win, const char *fmt, va_list ap);
 
 WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     WINDOW *win = calloc(1, sizeof(WINDOW));
@@ -146,6 +147,28 @@ int waddch(WINDOW *win, char ch) {
     buf[0] = ch;
     buf[1] = '\0';
     return waddstr(win, buf);
+}
+
+int mvwaddch(WINDOW *win, int y, int x, char ch) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return waddch(win, ch);
+}
+
+int mvwaddstr(WINDOW *win, int y, int x, const char *str) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return waddstr(win, str);
+}
+
+int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwprintw_internal(win, fmt, ap);
+    va_end(ap);
+    return r;
 }
 
 static int vwprintw_internal(WINDOW *win, const char *fmt, va_list ap) {

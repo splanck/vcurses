@@ -136,6 +136,9 @@ Single-value helpers like `getcurx(win)` and `getmaxy(win)` are also provided.
 
 `wprintw(win, fmt, ...)` works like `printf` but writes into a window.
 `printw()` is a convenience wrapper that targets `stdscr`.
+`mvwprintw` and `mvprintw` move the cursor first. Similar helpers
+`mvwaddch`, `mvaddch`, `mvwaddstr` and `mvaddstr` combine movement with
+character or string output.
 
 ```c
 wprintw(win, "Count: %d", n);
