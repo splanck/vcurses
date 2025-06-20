@@ -177,12 +177,12 @@ int getch(void) {
     return wgetch(stdscr);
 }
 
-int wgetstr(WINDOW *win, char *str) {
-    if (!win || !str)
+int wgetstr(WINDOW *win, char *buf) {
+    if (!win || !buf)
         return -1;
 
     int ch;
-    char *p = str;
+    char *p = buf;
 
     while ((ch = wgetch(win)) != -1) {
         if (ch == '\n' || ch == '\r') {
@@ -194,8 +194,8 @@ int wgetstr(WINDOW *win, char *str) {
     return -1;
 }
 
-int getstr(char *str) {
-    return wgetstr(stdscr, str);
+int getstr(char *buf) {
+    return wgetstr(stdscr, buf);
 }
 
 int keypad(WINDOW *win, bool yes) {
