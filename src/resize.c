@@ -74,6 +74,7 @@ static void handle_winch(int sig)
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0) {
         resize_all(ws.ws_row, ws.ws_col);
     }
+    ungetch(KEY_RESIZE);
 }
 
 void _vc_resize_init(void)
@@ -103,6 +104,7 @@ int resizeterm(int lines, int cols)
     if (lines <= 0 || cols <= 0)
         return -1;
     resize_all(lines, cols);
+    ungetch(KEY_RESIZE);
     _vc_screen_free();
     return 0;
 }
