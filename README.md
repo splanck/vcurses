@@ -36,7 +36,9 @@ enable color handling and define up to 256 color pairs with
 defined pair. Use `pair_content(pair, &fg, &bg)` to query a pair and
 `color_content(color, &r, &g, &b)` to retrieve the RGB components of a
 color. Individual colors can be redefined with `init_color(color, r, g, b)`
-after calling `start_color()`.
+after calling `start_color()`.  Calling `use_default_colors()` lets
+`init_pair` accept `-1` as either color to keep the terminal's default
+foreground or background.
 
 ## Text attributes
 

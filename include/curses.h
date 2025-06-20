@@ -148,6 +148,7 @@ int getmouse(MEVENT *event);
 
 
 int start_color(void);
+int use_default_colors(void);
 int init_pair(short pair, short fg, short bg);
 int pair_content(short pair, short *fg, short *bg);
 int color_content(short color, short *r, short *g, short *b);

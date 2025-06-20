@@ -71,6 +71,12 @@ Each component ranges from 0 to 1000. Use `color_content(color, &r, &g, &b)`
 to read back the stored values. `has_colors()` reports whether color mode is
 active and `can_change_color()` always returns true in this implementation.
 
+Calling `use_default_colors()` permits `init_pair` to take `-1` as the
+foreground or background.  A value of `-1` leaves that component unchanged
+so the terminal's default color shows through.  When default color support is
+active, `wcolor_set(win, -1, NULL)` clears any color pair on `win` while
+preserving its other attributes.
+
 ## Text attributes
 
 Attribute masks control text style:

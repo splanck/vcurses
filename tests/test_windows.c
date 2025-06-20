@@ -176,6 +176,17 @@ START_TEST(test_wcolor_set_pair)
 }
 END_TEST
 
+START_TEST(test_wcolor_set_minus_one)
+{
+    WINDOW *w = newwin(1, 1, 0, 0);
+    start_color();
+    use_default_colors();
+    ck_assert_int_eq(wcolor_set(w, -1, NULL), 0);
+    ck_assert_int_eq(w->attr & A_COLOR, 0);
+    delwin(w);
+}
+END_TEST
+
 START_TEST(test_wrefresh_null)
 {
     ck_assert_int_eq(wrefresh(NULL), -1);
@@ -210,6 +221,7 @@ Suite *window_suite(void)
     tcase_add_test(tc, test_subwin_parent);
     tcase_add_test(tc, test_derwin_relative);
     tcase_add_test(tc, test_wcolor_set_pair);
+    tcase_add_test(tc, test_wcolor_set_minus_one);
     tcase_add_test(tc, test_wrefresh_null);
     tcase_add_test(tc, test_wrefresh_basic);
     suite_add_tcase(s, tc);
