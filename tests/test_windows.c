@@ -128,6 +128,21 @@ START_TEST(test_wcolor_set_pair)
 }
 END_TEST
 
+START_TEST(test_wrefresh_null)
+{
+    ck_assert_int_eq(wrefresh(NULL), -1);
+}
+END_TEST
+
+START_TEST(test_wrefresh_basic)
+{
+    WINDOW *w = newwin(1, 3, 0, 0);
+    waddstr(w, "abc");
+    ck_assert_int_eq(wrefresh(w), 0);
+    delwin(w);
+}
+END_TEST
+
 Suite *window_suite(void)
 {
     Suite *s = suite_create("windows");
@@ -143,6 +158,8 @@ Suite *window_suite(void)
     tcase_add_test(tc, test_subwin_parent);
     tcase_add_test(tc, test_derwin_relative);
     tcase_add_test(tc, test_wcolor_set_pair);
+    tcase_add_test(tc, test_wrefresh_null);
+    tcase_add_test(tc, test_wrefresh_basic);
     suite_add_tcase(s, tc);
     return s;
 }

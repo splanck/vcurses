@@ -308,3 +308,13 @@ int wvline(WINDOW *win, char ch, int n) {
 int vline(char ch, int n) {
     return wvline(stdscr, ch, n);
 }
+
+extern void _vc_screen_refresh_region(int top, int left, int height, int width);
+
+int wrefresh(WINDOW *win) {
+    if (!win)
+        return -1;
+    _vc_screen_refresh_region(win->begy, win->begx, win->maxy, win->maxx);
+    printf("\x1b[%d;%dH", win->begy + win->cury + 1, win->begx + win->curx + 1);
+    return fflush(stdout);
+}
