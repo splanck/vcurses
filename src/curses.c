@@ -37,6 +37,12 @@ static void apply_attr(int attr) {
         printf("\x1b[4m");
     if (attr & A_REVERSE)
         printf("\x1b[7m");
+    if (attr & A_BLINK)
+        printf("\x1b[5m");
+    if (attr & A_DIM)
+        printf("\x1b[2m");
+    if (attr & A_STANDOUT)
+        printf("\x1b[7m");
 }
 
 void _vcurses_apply_attr(int attr) {

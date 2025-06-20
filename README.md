@@ -40,9 +40,10 @@ after calling `start_color()`.
 
 ## Text attributes
 
-Attributes modify how text is displayed. `vcurses` currently supports
-`A_BOLD`, `A_UNDERLINE` and `A_REVERSE`. They can be combined with color
-pairs using `attron`/`wattron` and disabled with `attroff`/`wattroff`.
+Attributes modify how text is displayed. `vcurses` supports
+`A_BOLD`, `A_UNDERLINE`, `A_REVERSE`, `A_BLINK`, `A_DIM` and `A_STANDOUT`.
+They can be combined with color pairs using `attron`/`wattron` and disabled
+with `attroff`/`wattroff`.
 Reverse video swaps the foreground and background colors:
 
 ```c
