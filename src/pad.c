@@ -33,9 +33,11 @@ WINDOW *newpad(int nlines, int ncols) {
     win->pad_x = 0;
     win->pad_buf = malloc(sizeof(char *) * nlines);
     win->pad_attr = malloc(sizeof(int *) * nlines);
-    if (!win->pad_buf || !win->pad_attr) {
+    win->dirty = calloc(nlines, sizeof(unsigned char));
+    if (!win->pad_buf || !win->pad_attr || !win->dirty) {
         free(win->pad_buf);
         free(win->pad_attr);
+        free(win->dirty);
         free(win);
         return NULL;
     }
@@ -51,6 +53,7 @@ WINDOW *newpad(int nlines, int ncols) {
             }
             free(win->pad_buf);
             free(win->pad_attr);
+            free(win->dirty);
             free(win);
             return NULL;
         }
@@ -58,6 +61,7 @@ WINDOW *newpad(int nlines, int ncols) {
         for (int c = 0; c < ncols; ++c)
             win->pad_attr[r][c] = win->attr;
     }
+    memset(win->dirty, 1, nlines);
     _vc_register_window(win);
     return win;
 }
@@ -84,6 +88,12 @@ WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x) {
     win->pad_x = orig->pad_x + begin_x;
     win->pad_buf = orig->pad_buf;
     win->pad_attr = orig->pad_attr;
+    win->dirty = calloc(nlines, sizeof(unsigned char));
+    if (!win->dirty) {
+        free(win);
+        return NULL;
+    }
+    memset(win->dirty, 1, nlines);
     _vc_register_window(win);
     return win;
 }

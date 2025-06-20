@@ -86,6 +86,11 @@ visual flash using ANSI escape codes when supported.
 `wrefresh(win)` to update only a specific window when you don't need to
 repaint everything.
 
+If the terminal contents become corrupted, `touchwin(win)` or
+`wtouchln(win, line, count, 1)` mark regions of a window as dirty so the next
+`wrefresh()` repaints them. `redrawwin(win)` is equivalent to touching the
+whole window.
+
 ## Clearing windows
 
 `wclear(win)` erases all contents of a window. `werase(win)` performs the same

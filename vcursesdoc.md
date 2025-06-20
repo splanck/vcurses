@@ -172,6 +172,11 @@ Call `refresh()` to write the full screen to the terminal. When only a
 portion of the display has changed, `wrefresh(win)` flushes just that
 window's area.
 
+Sometimes external programs overwrite part of the terminal.  The
+`touchwin()` and `wtouchln()` functions mark whole windows or selected lines
+as dirty so the next `wrefresh()` repaints them. `redrawwin()` touches the
+entire window in one call.
+
 ## Clearing window regions
 
 Three helpers manipulate the contents of a window without immediately
