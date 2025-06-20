@@ -22,6 +22,8 @@ make clean
 
 Man pages for the core API are available in `docs/man`. Useful entries
 include [initscr.3](docs/man/initscr.3) and [getch.3](docs/man/getch.3).
+Additional notes on reading strings with `getstr` are in
+[vcursesdoc.md](vcursesdoc.md).
 
 ## Color support
 
