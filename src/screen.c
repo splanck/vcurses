@@ -159,12 +159,15 @@ int refresh(void) {
 
 void _vc_screen_scroll_region(int top, int left, int height, int width,
                               int lines, int attr) {
+    /* scroll a rectangular region by the given line count.  A positive
+       count scrolls up while a negative count scrolls down. */
     if (ensure_buffer() == -1)
         return;
     if (lines == 0 || height <= 0 || width <= 0)
         return;
     if (top < 0 || left < 0 || top + height > buf_rows || left + width > buf_cols)
         return;
+
     int count = lines > 0 ? lines : -lines;
     if (count > height)
         count = height;
