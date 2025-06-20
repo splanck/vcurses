@@ -1,6 +1,7 @@
 #include <check.h>
 #include "../include/curses.h"
 #include <sys/time.h>
+#include <signal.h>
 
 static long diff_ms(struct timeval *a, struct timeval *b) {
     return (b->tv_sec - a->tv_sec) * 1000L + (b->tv_usec - a->tv_usec)/1000L;
@@ -54,6 +55,21 @@ START_TEST(test_ungetch_stack_order)
 }
 END_TEST
 
+extern void _vc_resize_init(void);
+extern void _vc_resize_shutdown(void);
+
+START_TEST(test_resize_event)
+{
+    _vc_resize_init();
+    raise(SIGWINCH);
+    WINDOW *w = newwin(1,1,0,0);
+    int ch = wgetch(w);
+    ck_assert_int_eq(ch, KEY_RESIZE);
+    delwin(w);
+    _vc_resize_shutdown();
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -62,6 +78,7 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_wtimeout_delay);
     tcase_add_test(tc, test_ungetch_single);
     tcase_add_test(tc, test_ungetch_stack_order);
+    tcase_add_test(tc, test_resize_event);
     suite_add_tcase(s, tc);
     return s;
 }

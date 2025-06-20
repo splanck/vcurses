@@ -93,7 +93,8 @@ window on screen.
 
 `wresize(win, lines, cols)` changes the dimensions of a window. When used on a
 pad, the backing buffers are reallocated. Call `resizeterm(lines, cols)` to
-update `stdscr` and all windows after the terminal size changes.
+update `stdscr` and all windows after the terminal size changes. When this
+happens `wgetch()` will return `KEY_RESIZE` so applications can react.
 
 ## Mouse input
 

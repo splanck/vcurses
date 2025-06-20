@@ -141,6 +141,9 @@ automatically adjusted so the entire window remains visible on screen.
 Resize an existing window with `wresize(win, rows, cols)`. For pads this will
 allocate new backing buffers. When the terminal itself changes dimensions,
 call `resizeterm(rows, cols)` so `stdscr` and all windows update accordingly.
+Whenever a resize occurs, the library places `KEY_RESIZE` onto the input
+queue. Applications that call `wgetch()` after the event will receive this
+code and can redraw their layout as needed.
 
 ## Window coordinate macros
 

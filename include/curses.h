@@ -104,6 +104,7 @@ typedef struct {
 #define REPORT_MOUSE_POSITION (1UL << 13)
 
 #define KEY_MOUSE 0x200
+#define KEY_RESIZE 0x201
 
 mmask_t mousemask(mmask_t newmask, mmask_t *oldmask);
 int getmouse(MEVENT *event);
