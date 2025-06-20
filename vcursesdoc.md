@@ -76,3 +76,13 @@ scrollok(log, true);
 wscrl(log, -1);   /* scroll down one line */
 ```
 
+## Drawing lines
+
+Use `whline()` and `wvline()` to draw repeated characters from the current
+cursor position. Wrappers `hline()` and `vline()` operate on `stdscr`:
+
+```c
+whline(win, '-', 10); /* horizontal line */
+wvline(win, '|', 5);  /* vertical line */
+```
+

@@ -96,7 +96,7 @@ int addch(char ch);      /* stdscr wrapper */
 int addstr(const char *str);
 ```
 
-Scrolling and borders:
+Scrolling, borders and line drawing:
 
 ```c
 int scrollok(WINDOW *win, bool bf);
@@ -105,6 +105,10 @@ int box(WINDOW *win, char verch, char horch);
 int wborder(WINDOW *win,
             char ls, char rs, char ts, char bs,
             char tl, char tr, char bl, char br);
+int whline(WINDOW *win, char ch, int n);
+int hline(char ch, int n);
+int wvline(WINDOW *win, char ch, int n);
+int vline(char ch, int n);
 ```
 
 ### Input

@@ -244,3 +244,67 @@ int box(WINDOW *win, char verch, char horch) {
     return wborder(win, verch, verch, horch, horch,
                    0, 0, 0, 0);
 }
+
+int whline(WINDOW *win, char ch, int n) {
+    if (!win || n <= 0)
+        return -1;
+    if (!ch)
+        ch = '-';
+
+    char buf[2] = { ch, 0 };
+    int drawn = 0;
+    for (int i = 0; i < n && win->curx + i < win->maxx; ++i) {
+        if (win->is_pad) {
+            WINDOW *root = pad_root(win);
+            int rr = win->pad_y + win->cury;
+            int cc = win->pad_x + win->curx + i;
+            if (rr >= root->maxy || cc >= root->maxx)
+                break;
+            root->pad_buf[rr][cc] = ch;
+            root->pad_attr[rr][cc] = win->attr;
+        } else {
+            _vc_screen_puts(win->begy + win->cury,
+                            win->begx + win->curx + i,
+                            buf, win->attr);
+        }
+        drawn++;
+    }
+    win->curx += drawn;
+    return 0;
+}
+
+int hline(char ch, int n) {
+    return whline(stdscr, ch, n);
+}
+
+int wvline(WINDOW *win, char ch, int n) {
+    if (!win || n <= 0)
+        return -1;
+    if (!ch)
+        ch = '|';
+
+    char buf[2] = { ch, 0 };
+    int drawn = 0;
+    for (int i = 0; i < n && win->cury + i < win->maxy; ++i) {
+        if (win->is_pad) {
+            WINDOW *root = pad_root(win);
+            int rr = win->pad_y + win->cury + i;
+            int cc = win->pad_x + win->curx;
+            if (rr >= root->maxy || cc >= root->maxx)
+                break;
+            root->pad_buf[rr][cc] = ch;
+            root->pad_attr[rr][cc] = win->attr;
+        } else {
+            _vc_screen_puts(win->begy + win->cury + i,
+                            win->begx + win->curx,
+                            buf, win->attr);
+        }
+        drawn++;
+    }
+    win->cury += drawn;
+    return 0;
+}
+
+int vline(char ch, int n) {
+    return wvline(stdscr, ch, n);
+}
