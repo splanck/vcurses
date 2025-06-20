@@ -122,6 +122,12 @@ operations honour the window's current attributes when filling spaces.
 Use `mvwin(win, y, x)` to reposition a window. The coordinates are
 automatically adjusted so the entire window remains visible on screen.
 
+## Resizing windows
+
+Resize an existing window with `wresize(win, rows, cols)`. For pads this will
+allocate new backing buffers. When the terminal itself changes dimensions,
+call `resizeterm(rows, cols)` so `stdscr` and all windows update accordingly.
+
 ## Window coordinate macros
 
 `vcurses` defines a set of macros that mirror those found in ncurses to

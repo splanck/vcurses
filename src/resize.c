@@ -97,3 +97,13 @@ void _vc_resize_shutdown(void)
     }
 }
 
+extern void _vc_screen_free(void);
+int resizeterm(int lines, int cols)
+{
+    if (lines <= 0 || cols <= 0)
+        return -1;
+    resize_all(lines, cols);
+    _vc_screen_free();
+    return 0;
+}
+
