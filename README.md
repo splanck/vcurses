@@ -34,7 +34,8 @@ enable color handling and define up to 256 color pairs with
 `attron`, `attroff`, or `attrset` (or their window variants) to apply a
 defined pair. Use `pair_content(pair, &fg, &bg)` to query a pair and
 `color_content(color, &r, &g, &b)` to retrieve the RGB components of a
-color.
+color. Individual colors can be redefined with `init_color(color, r, g, b)`
+after calling `start_color()`.
 
 ## Input timeouts
 

@@ -51,3 +51,18 @@ int color_content(short color, short *r, short *g, short *b) {
         *b = _vc_colors[color].b;
     return 0;
 }
+
+int init_color(short color, short r, short g, short b) {
+    if (!_vc_colors_initialized || color < 0 || color > COLOR_WHITE)
+        return -1;
+    _vc_colors[color] = (color_rgb_t){r, g, b};
+    return 0;
+}
+
+int has_colors(void) {
+    return _vc_colors_initialized;
+}
+
+int can_change_color(void) {
+    return 1;
+}

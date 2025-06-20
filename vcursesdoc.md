@@ -16,3 +16,16 @@ is typical for command prompts.
 `getstr` reads from `stdscr`, while `wgetstr` accepts the window to read from.
 Both respect keypad mode, returning special key codes if keypad is enabled.
 
+## Color customization
+
+Call `start_color()` to enable color handling. The RGB components of the
+basic colors may then be changed with:
+
+```c
+int init_color(short color, short r, short g, short b);
+```
+
+Each component ranges from 0 to 1000. Use `color_content(color, &r, &g, &b)`
+to read back the stored values. `has_colors()` reports whether color mode is
+active and `can_change_color()` always returns true in this implementation.
+
