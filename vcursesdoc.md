@@ -153,6 +153,9 @@ scrollok(log, true);
 wscrl(log, -1);   /* scroll down one line */
 ```
 
+Calling `scroll(win)` is equivalent to `wscrl(win, 1)` but requires that
+scrolling be enabled with `scrollok(win, true)`.
+
 ## Drawing lines
 
 Use `whline()` and `wvline()` to draw repeated characters from the current

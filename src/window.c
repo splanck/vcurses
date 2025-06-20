@@ -228,6 +228,13 @@ int wscrl(WINDOW *win, int lines) {
     return 0;
 }
 
+/* scroll a window by one line if scrolling is enabled */
+int scroll(WINDOW *win) {
+    if (!win || !win->scroll)
+        return -1;
+    return wscrl(win, 1);
+}
+
 int wborder(WINDOW *win,
             char ls, char rs, char ts, char bs,
             char tl, char tr, char bl, char br) {
