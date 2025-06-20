@@ -46,3 +46,22 @@ if (ch == KEY_MOUSE && getmouse(&me) == 0) {
 }
 ```
 
+## Pads
+
+Pads are off-screen windows with their own backing buffers. Create one with
+`newpad(rows, cols)` and write to it using the normal output functions. Use
+`subpad` to create a view into an existing pad that shares the same buffer.
+
+Unlike regular windows which draw directly to the terminal, pads store their
+contents in memory. The `prefresh` function copies a region from a pad to the
+screen:
+
+```c
+int prefresh(WINDOW *pad, int pminrow, int pmincol,
+             int sminrow, int smincol, int smaxrow, int smaxcol);
+```
+
+`pminrow` and `pmincol` select the upper-left corner of the pad region while
+`sminrow`, `smincol`, `smaxrow` and `smaxcol` specify the destination
+rectangle on screen.
+
