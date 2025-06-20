@@ -46,6 +46,20 @@ Each component ranges from 0 to 1000. Use `color_content(color, &r, &g, &b)`
 to read back the stored values. `has_colors()` reports whether color mode is
 active and `can_change_color()` always returns true in this implementation.
 
+## Text attributes
+
+Three attribute masks control text style:
+
+```c
+#define A_BOLD        0x010000
+#define A_UNDERLINE   0x020000
+#define A_REVERSE     0x040000
+```
+
+Enable an attribute with `wattron(win, mask)` and disable it with
+`wattroff(win, mask)`. `A_REVERSE` swaps the foreground and background
+colors when output is refreshed.
+
 ## Mouse events
 
 Enable mouse reporting by calling `mousemask()` with the desired button masks.
