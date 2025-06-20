@@ -62,6 +62,13 @@ visual flash using ANSI escape codes when supported.
 `wrefresh(win)` to update only a specific window when you don't need to
 repaint everything.
 
+## Clearing windows
+
+`wclear(win)` erases all contents of a window. `wclrtoeol(win)` blanks
+from the cursor to the end of the current line and `wclrtobot(win)` clears
+from the cursor to the bottom of the window. These helpers modify only the
+target window's backing buffers.
+
 ## Scrolling
 
 Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
