@@ -90,6 +90,7 @@ int wtimeout(WINDOW *win, int delay);
 int timeout(int delay);
 int halfdelay(int tenths);
 int set_escdelay(int ms);
+int flushinp(void);
 int leaveok(WINDOW *win, bool bf);
 int scrollok(WINDOW *win, bool bf);
 int clearok(WINDOW *win, bool bf);

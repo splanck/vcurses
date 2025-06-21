@@ -8,6 +8,7 @@
 
 /* mouse event queue helper */
 extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
+extern void _vc_mouse_flush_events(void);
 
 /* simple push-back stack for characters */
 #define INPUT_QSIZE 32
@@ -383,6 +384,12 @@ int set_escdelay(int ms) {
     if (ms < 0)
         return -1;
     esc_delay = ms;
+    return 0;
+}
+
+int flushinp(void) {
+    input_qcount = 0;
+    _vc_mouse_flush_events();
     return 0;
 }
 

@@ -32,6 +32,7 @@ getnstr(buf, 3); /* reads up to three characters */
 Characters may be placed back onto the input stream using `ungetch`.
 The next call to `getch` or `wgetch` will return the pushed value
 instead of reading from the terminal.
+`flushinp()` clears any queued input, including mouse events.
 
 ## Key codes
 

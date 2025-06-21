@@ -42,3 +42,8 @@ int getmouse(MEVENT *event)
     event_pending = 0;
     return 0;
 }
+
+void _vc_mouse_flush_events(void)
+{
+    event_pending = 0;
+}
