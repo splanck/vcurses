@@ -199,3 +199,11 @@ wrappers `delch`, `mvwdelch` and `mvdelch` behave like the insertion helpers.
 lines. The helpers `insertln()` and `deleteln()` perform the same operations on
 `stdscr`.
 
+## Unicode
+
+Building with `-DVCURSES_WIDE` enables optional wide character storage.  When
+compiled this way the library provides `add_wch`, `wadd_wch`, `get_wch` and
+`wget_wch` for reading and writing `wchar_t` values.  Output uses the current
+locale encoding so call `setlocale(LC_CTYPE, "")` before `initscr()` when
+working with UTF-8.
+

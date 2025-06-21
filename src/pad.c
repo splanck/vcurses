@@ -1,6 +1,8 @@
 #include "curses.h"
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+#include <wchar.h>
 
 /* functions from resize.c */
 extern void _vc_register_window(WINDOW *win);
@@ -36,7 +38,7 @@ WINDOW *newpad(int nlines, int ncols) {
     win->is_pad = 1;
     win->pad_y = 0;
     win->pad_x = 0;
-    win->pad_buf = malloc(sizeof(char *) * nlines);
+    win->pad_buf = malloc(sizeof(vcchar_t *) * nlines);
     win->pad_attr = malloc(sizeof(int *) * nlines);
     win->dirty = calloc(nlines, sizeof(unsigned char));
     if (!win->pad_buf || !win->pad_attr || !win->dirty) {
@@ -47,7 +49,7 @@ WINDOW *newpad(int nlines, int ncols) {
         return NULL;
     }
     for (int r = 0; r < nlines; ++r) {
-        win->pad_buf[r] = malloc(ncols);
+        win->pad_buf[r] = malloc(sizeof(vcchar_t) * ncols);
         win->pad_attr[r] = malloc(sizeof(int) * ncols);
         if (!win->pad_buf[r] || !win->pad_attr[r]) {
             for (int i = 0; i <= r; ++i) {
@@ -62,7 +64,8 @@ WINDOW *newpad(int nlines, int ncols) {
             free(win);
             return NULL;
         }
-        memset(win->pad_buf[r], ' ', ncols);
+        for (int c = 0; c < ncols; ++c)
+            win->pad_buf[r][c] = (vcchar_t)' ';
         for (int c = 0; c < ncols; ++c)
             win->pad_attr[r][c] = win->bkgd;
     }
@@ -121,9 +124,20 @@ int prefresh(WINDOW *pad, int pminrow, int pmincol,
                 break;
             int rr = pad->pad_y + pminrow + r;
             int cc = pad->pad_x + pmincol + c;
-            char ch = root->pad_buf[rr][cc];
+            vcchar_t ch = root->pad_buf[rr][cc];
             int attr = root->pad_attr[rr][cc];
+#ifdef VCURSES_WIDE
+            char buf[MB_LEN_MAX + 1];
+            mbstate_t st = {0};
+            size_t n = wcrtomb(buf, ch, &st);
+            if (n == (size_t)-1) {
+                buf[0] = '?';
+                n = 1;
+            }
+            buf[n] = '\0';
+#else
             char buf[2] = { ch, 0 };
+#endif
             _vc_screen_puts(sminrow + r, smincol + c, buf, attr);
         }
     }

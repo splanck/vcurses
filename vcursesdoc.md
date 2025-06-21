@@ -300,3 +300,23 @@ its parent and evaluate to `-1` if the window has no parent.  These
 macros operate purely on the `WINDOW` structure and therefore behave
 compatibly with applications written for ncurses.
 
+## Unicode handling
+
+When the library is compiled with `-DVCURSES_WIDE` the backing buffers use
+`wchar_t` instead of plain bytes. Additional functions mirror the byte oriented
+API:
+
+```c
+int add_wch(wchar_t wch);           /* stdscr wrapper */
+int wadd_wch(WINDOW *win, wchar_t wch);
+int mvadd_wch(int y, int x, wchar_t wch);
+int mvwadd_wch(WINDOW *win, int y, int x, wchar_t wch);
+int get_wch(wchar_t *out);          /* stdscr wrapper */
+int wget_wch(WINDOW *win, wchar_t *out);
+int unget_wch(wchar_t ch);
+```
+
+Text drawn to the terminal is encoded using the current locale. Programs should
+call `setlocale(LC_CTYPE, "")` early so multibyte conversion matches the
+expected encoding (typically UTF-8).
+
