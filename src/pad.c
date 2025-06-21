@@ -32,6 +32,7 @@ WINDOW *newpad(int nlines, int ncols) {
     win->bottom_margin = nlines ? nlines - 1 : 0;
     win->clearok = 0;
     win->delay = -1;
+    win->meta_mode = 0;
     win->attr = COLOR_PAIR(0);
     win->bkgd = COLOR_PAIR(0);
     win->bkgd = COLOR_PAIR(0);
@@ -93,6 +94,7 @@ WINDOW *subpad(WINDOW *orig, int nlines, int ncols, int begin_y, int begin_x) {
     win->bottom_margin = nlines ? nlines - 1 : 0;
     win->clearok = 0;
     win->delay = -1;
+    win->meta_mode = 0;
     win->attr = COLOR_PAIR(0);
     win->is_pad = 1;
     win->pad_y = orig->pad_y + begin_y;

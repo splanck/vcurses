@@ -136,9 +136,11 @@ int wtimeout(WINDOW *win, int delay); /* milliseconds, -1 blocking */
 int timeout(int delay); /* stdscr wrapper */
 int halfdelay(int tenths); /* sets stdscr timeout */
 int set_escdelay(int ms); /* ESC detection delay */
+int meta(WINDOW *win, bool bf); /* return 8-bit input */
 ```
 
 `nodelay()` is shorthand for `wtimeout(win, 0)`.  `timeout()` is the same operation on `stdscr`. Positive values passed to `wtimeout()` specify the maximum wait time in milliseconds.  `halfdelay()` enables cbreak mode and waits up to the given tenths of a second when reading from `stdscr`.  `set_escdelay()` controls how long `wgetch()` waits for the remainder of an escape sequence before returning the ESC key itself.
+`meta(win, true)` enables 8-bit input so bytes above 0x7F are returned unchanged. With it disabled the high bit is stripped.
 
 ### Attributes and colors
 

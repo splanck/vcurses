@@ -83,6 +83,7 @@ int mvscanw(int y, int x, const char *fmt, ...);
 int keypad(WINDOW *win, bool yes);
 int nodelay(WINDOW *win, bool bf);
 int notimeout(WINDOW *win, bool bf);
+int meta(WINDOW *win, bool bf);
 int wtimeout(WINDOW *win, int delay);
 int timeout(int delay);
 int halfdelay(int tenths);

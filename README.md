@@ -74,6 +74,8 @@ window using the new attribute.
 - `set_escdelay(ms)` adjusts how long `wgetch()` waits after an ESC
   character before deciding it's a lone escape key.
 - `notimeout(win, true)` bypasses the escape delay for that window.
+- `meta(win, true)` causes `wgetch()` to return 8-bit input values
+  instead of masking them to 7 bits.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached. Basic formatted input is also provided by
