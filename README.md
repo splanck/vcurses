@@ -26,6 +26,7 @@ include [initscr.3](docs/man/initscr.3) and [getch.3](docs/man/getch.3).
 Additional notes on reading strings with `getstr` are in
 [vcursesdoc.md](vcursesdoc.md).
 Pad usage is documented in the [Pads section](vcursesdoc.md#pads).
+Panel management functions are described in the [Panels section](vcursesdoc.md#panels).
 Line drawing constants like `ACS_HLINE` are listed in the
 [ACS section](vcursesdoc.md#acs-line-drawing-characters).
 
