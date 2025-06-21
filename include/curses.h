@@ -270,6 +270,7 @@ int nl(void);
 int nonl(void);
 int beep(void);
 int flash(void);
+int napms(int ms);
 
 /* Internal helper used by the library */
 void _vcurses_apply_attr(int attr);

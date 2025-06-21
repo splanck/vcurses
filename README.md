@@ -102,7 +102,8 @@ the mapping.
 ## Alerts
 
 `beep()` writes an audible bell (\a) to the terminal. `flash()` emits a brief
-visual flash using ANSI escape codes when supported.
+visual flash using ANSI escape codes when supported. `napms(ms)` pauses for
+the specified number of milliseconds.
 
 `refresh()` redraws the entire screen from the internal buffer. Use
 `wrefresh(win)` to update only a specific window when you don't need to
