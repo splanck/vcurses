@@ -8,6 +8,38 @@ static int **attr_buf = NULL;
 static int buf_rows = 0;
 static int buf_cols = 0;
 
+/* queued regions to refresh when doupdate() is called */
+typedef struct refresh_rect {
+    int top, left, height, width;
+    struct refresh_rect *next;
+} refresh_rect;
+
+static refresh_rect *refresh_head = NULL;
+static int cursor_y = -1, cursor_x = -1;
+
+static void queue_region(int top, int left, int height, int width) {
+    refresh_rect *node = malloc(sizeof(refresh_rect));
+    if (!node)
+        return;
+    node->top = top;
+    node->left = left;
+    node->height = height;
+    node->width = width;
+    node->next = refresh_head;
+    refresh_head = node;
+}
+
+static void clear_queue(void) {
+    refresh_rect *n = refresh_head;
+    while (n) {
+        refresh_rect *tmp = n->next;
+        free(n);
+        n = tmp;
+    }
+    refresh_head = NULL;
+    cursor_y = cursor_x = -1;
+}
+
 static int ensure_buffer(void) {
     if (!stdscr)
         return -1;
@@ -81,6 +113,7 @@ void _vc_screen_free(void) {
         free(attr_buf);
         attr_buf = NULL;
     }
+    clear_queue();
 }
 
 int clear(void) {
@@ -136,25 +169,7 @@ int clrtobot(void) {
 }
 
 int refresh(void) {
-    if (ensure_buffer() == -1)
-        return fflush(stdout);
-    for (int r = 0; r < buf_rows; ++r) {
-        printf("\x1b[%d;1H", r + 1);
-        int current_attr = -1;
-        for (int c = 0; c < buf_cols; ++c) {
-            int a = attr_buf[r][c];
-            if (a != current_attr) {
-                _vcurses_apply_attr(a);
-                current_attr = a;
-            }
-            fputc(screen_buf[r][c], stdout);
-        }
-        if (current_attr != -1)
-            _vcurses_apply_attr(A_NORMAL | COLOR_PAIR(0));
-    }
-    if (stdscr)
-        printf("\x1b[%d;%dH", stdscr->cury + 1, stdscr->curx + 1);
-    return fflush(stdout);
+    return wrefresh(stdscr);
 }
 
 void _vc_screen_refresh_region(int top, int left, int height, int width) {
@@ -238,4 +253,55 @@ int _vc_screen_get_cell(int y, int x, char *ch, int *attr)
     if (attr)
         *attr = attr_buf[y][x];
     return 0;
+}
+
+int doupdate(void) {
+    refresh_rect *n = refresh_head;
+    while (n) {
+        _vc_screen_refresh_region(n->top, n->left, n->height, n->width);
+        refresh_rect *tmp = n->next;
+        free(n);
+        n = tmp;
+    }
+    refresh_head = NULL;
+    if (cursor_y >= 0 && cursor_x >= 0)
+        printf("\x1b[%d;%dH", cursor_y + 1, cursor_x + 1);
+    cursor_y = cursor_x = -1;
+    return fflush(stdout);
+}
+
+int wnoutrefresh(WINDOW *win) {
+    if (!win)
+        return -1;
+    if (win->clearok) {
+        _vc_screen_free();
+        clear();
+        win->clearok = 0;
+    }
+    if (!win->dirty) {
+        queue_region(win->begy, win->begx, win->maxy, win->maxx);
+    } else {
+        int start = -1;
+        for (int r = 0; r < win->maxy; ++r) {
+            if (win->dirty[r]) {
+                if (start == -1)
+                    start = r;
+            } else if (start != -1) {
+                queue_region(win->begy + start, win->begx, r - start, win->maxx);
+                memset(&win->dirty[start], 0, (size_t)(r - start));
+                start = -1;
+            }
+        }
+        if (start != -1) {
+            queue_region(win->begy + start, win->begx, win->maxy - start, win->maxx);
+            memset(&win->dirty[start], 0, (size_t)(win->maxy - start));
+        }
+    }
+    cursor_y = win->begy + win->cury;
+    cursor_x = win->begx + win->curx;
+    return 0;
+}
+
+int noutrefresh(void) {
+    return wnoutrefresh(stdscr);
 }
