@@ -183,6 +183,33 @@ int getmouse(MEVENT *event);
 #define KEY_F11    KEY_F(11)
 #define KEY_F12    KEY_F(12)
 
+/* Alternate character set constants */
+#define ACS_ULCORNER  0x80
+#define ACS_LLCORNER  0x81
+#define ACS_URCORNER  0x82
+#define ACS_LRCORNER  0x83
+#define ACS_LTEE      0x84
+#define ACS_RTEE      0x85
+#define ACS_TTEE      0x86
+#define ACS_BTEE      0x87
+#define ACS_HLINE     0x88
+#define ACS_VLINE     0x89
+#define ACS_PLUS      0x8A
+#define ACS_S1        0x8B
+#define ACS_S9        0x8C
+#define ACS_DIAMOND   0x8D
+#define ACS_CKBOARD   0x8E
+#define ACS_DEGREE    0x8F
+#define ACS_PLMINUS   0x90
+#define ACS_BULLET    0x91
+#define ACS_LARROW    0x92
+#define ACS_RARROW    0x93
+#define ACS_UARROW    0x94
+#define ACS_DARROW    0x95
+#define ACS_BOARD     0x96
+#define ACS_LANTERN   0x97
+#define ACS_BLOCK     0x98
+
 
 int start_color(void);
 int use_default_colors(void);
