@@ -177,3 +177,10 @@ To remove the character at the cursor use `wdelch(win)`.  The remainder of the
 line moves left and the final cell is filled with a space.  Convenience
 wrappers `delch`, `mvwdelch` and `mvdelch` behave like the insertion helpers.
 
+## Inserting and deleting lines
+
+`winsdelln(win, n)` shifts the lines from the cursor to the bottom of `win` by
+`n` rows. A positive value inserts blank lines while a negative value deletes
+lines. The helpers `insertln()` and `deleteln()` perform the same operations on
+`stdscr`.
+

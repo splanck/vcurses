@@ -756,6 +756,79 @@ int mvinsstr(int y, int x, const char *str)
     return mvwinsstr(stdscr, y, x, str);
 }
 
+int winsdelln(WINDOW *win, int n)
+{
+    if (!win || n == 0)
+        return win ? 0 : -1;
+
+    int height = win->maxy - win->cury;
+    if (height <= 0)
+        return 0;
+
+    if (n > height)
+        n = height;
+    else if (n < -height)
+        n = -height;
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int start = win->pad_y + win->cury;
+        int width = win->maxx;
+        if (start >= root->maxy || win->pad_x >= root->maxx)
+            return -1;
+        if (start + height > root->maxy)
+            height = root->maxy - start;
+        if (win->pad_x + width > root->maxx)
+            width = root->maxx - win->pad_x;
+        if (n > 0) {
+            for (int r = height - 1; r >= n; --r) {
+                memmove(&root->pad_buf[start + r][win->pad_x],
+                        &root->pad_buf[start + r - n][win->pad_x],
+                        (size_t)width);
+                memmove(&root->pad_attr[start + r][win->pad_x],
+                        &root->pad_attr[start + r - n][win->pad_x],
+                        sizeof(int) * (size_t)width);
+            }
+            for (int r = 0; r < n; ++r) {
+                memset(&root->pad_buf[start + r][win->pad_x], ' ', (size_t)width);
+                for (int c = 0; c < width; ++c)
+                    root->pad_attr[start + r][win->pad_x + c] = win->attr;
+            }
+        } else {
+            n = -n;
+            for (int r = 0; r < height - n; ++r) {
+                memmove(&root->pad_buf[start + r][win->pad_x],
+                        &root->pad_buf[start + r + n][win->pad_x],
+                        (size_t)width);
+                memmove(&root->pad_attr[start + r][win->pad_x],
+                        &root->pad_attr[start + r + n][win->pad_x],
+                        sizeof(int) * (size_t)width);
+            }
+            for (int r = height - n; r < height; ++r) {
+                memset(&root->pad_buf[start + r][win->pad_x], ' ', (size_t)width);
+                for (int c = 0; c < width; ++c)
+                    root->pad_attr[start + r][win->pad_x + c] = win->attr;
+            }
+        }
+    } else {
+        _vc_screen_scroll_region(win->begy + win->cury, win->begx,
+                                 height, win->maxx, -n, win->attr);
+    }
+
+    mark_dirty(win, win->cury, height);
+    return 0;
+}
+
+int insertln(void)
+{
+    return winsdelln(stdscr, 1);
+}
+
+int deleteln(void)
+{
+    return winsdelln(stdscr, -1);
+}
+
 int wresize(WINDOW *win, int nlines, int ncols) {
     if (!win || nlines < 0 || ncols < 0)
         return -1;
