@@ -63,6 +63,8 @@ WINDOW *initscr(void) {
     stdscr->parent = NULL;
     stdscr->keypad_mode = 0;
     stdscr->scroll = 0;
+    stdscr->top_margin = 0;
+    stdscr->bottom_margin = rows ? rows - 1 : 0;
     stdscr->delay = -1;
     stdscr->attr = COLOR_PAIR(0);
 

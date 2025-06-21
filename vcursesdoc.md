@@ -156,6 +156,10 @@ wscrl(log, -1);   /* scroll down one line */
 Calling `scroll(win)` is equivalent to `wscrl(win, 1)` but requires that
 scrolling be enabled with `scrollok(win, true)`.
 
+Use `wsetscrreg(win, top, bottom)` to confine scrolling to a subset of
+lines. The parameters define the upper and lower bounds of the region
+within the window. `setscrreg` operates on `stdscr`.
+
 ## Drawing lines
 
 Use `whline()` and `wvline()` to draw repeated characters from the current

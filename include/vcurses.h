@@ -12,6 +12,8 @@ typedef struct window {
     struct window *parent; /* parent for subwindows */
     int keypad_mode; /* keypad enabled */
     int scroll; /* scrolling enabled */
+    int top_margin; /* top scrolling margin */
+    int bottom_margin; /* bottom scrolling margin */
     int clearok; /* full screen clear requested */
     int delay; /* input delay in ms (-1 blocking) */
     int attr; /* current attributes */

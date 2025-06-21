@@ -38,6 +38,8 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->parent = NULL;
     win->keypad_mode = 0;
     win->scroll = 0;
+    win->top_margin = 0;
+    win->bottom_margin = nlines ? nlines - 1 : 0;
     win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
@@ -240,6 +242,18 @@ int clearok(WINDOW *win, bool bf) {
     return 0;
 }
 
+int wsetscrreg(WINDOW *win, int top, int bottom) {
+    if (!win || top < 0 || bottom < top || bottom >= win->maxy)
+        return -1;
+    win->top_margin = top;
+    win->bottom_margin = bottom;
+    return 0;
+}
+
+int setscrreg(int top, int bottom) {
+    return wsetscrreg(stdscr, top, bottom);
+}
+
 /*
  * Scroll the specified window by the given number of lines. Positive values
  * scroll upward, while negative values scroll downward.
@@ -250,15 +264,18 @@ int wscrl(WINDOW *win, int lines) {
     if (lines == 0)
         return 0;
 
-    int count = lines;
-    if (lines > win->maxy)
-        count = win->maxy;
-    else if (lines < -win->maxy)
-        count = -win->maxy;
+    int region_top = win->begy + win->top_margin;
+    int height = win->bottom_margin - win->top_margin + 1;
 
-    _vc_screen_scroll_region(win->begy, win->begx, win->maxy, win->maxx,
+    int count = lines;
+    if (lines > height)
+        count = height;
+    else if (lines < -height)
+        count = -height;
+
+    _vc_screen_scroll_region(region_top, win->begx, height, win->maxx,
                              count, win->attr);
-    mark_dirty(win, 0, win->maxy);
+    mark_dirty(win, win->top_margin, height);
     return 0;
 }
 
@@ -898,6 +915,14 @@ int wresize(WINDOW *win, int nlines, int ncols) {
 
     win->maxy = nlines;
     win->maxx = ncols;
+    if (win->top_margin >= nlines)
+        win->top_margin = 0;
+    if (win->bottom_margin >= nlines)
+        win->bottom_margin = nlines ? nlines - 1 : 0;
+    if (win->top_margin > win->bottom_margin) {
+        win->top_margin = 0;
+        win->bottom_margin = nlines ? nlines - 1 : 0;
+    }
     free(win->dirty);
     win->dirty = calloc(nlines, sizeof(unsigned char));
     if (!win->dirty)
