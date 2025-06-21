@@ -65,7 +65,10 @@ window using the new attribute.
 
 - `nodelay(win, true)` makes reads non-blocking.
 - `wtimeout(win, ms)` specifies a delay in milliseconds for the next read.
+- `timeout(ms)` is a convenience wrapper for `wtimeout(stdscr, ms)`.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
+- `set_escdelay(ms)` adjusts how long `wgetch()` waits after an ESC
+  character before deciding it's a lone escape key.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached.
