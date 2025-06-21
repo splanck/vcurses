@@ -1,6 +1,7 @@
 # vcurses
 
-Minimalist modern curses compatible text library.
+Minimalist modern curses compatible text library. Multiple independent screens
+can be managed with `newterm()` and `set_term()`.
 
 ## Building
 
@@ -208,4 +209,12 @@ compiled this way the library provides `add_wch`, `wadd_wch`, `get_wch` and
 `wget_wch` for reading and writing `wchar_t` values.  Output uses the current
 locale encoding so call `setlocale(LC_CTYPE, "")` before `initscr()` when
 working with UTF-8.
+
+## Multiple screens
+
+Applications can maintain independent drawing buffers by creating additional
+`SCREEN` objects with `newterm(NULL, stdout, stdin)`. The active screen is
+selected with `set_term(scr)` which returns the previously active one. Each
+screen stores its own copy of `stdscr` and associated backing buffers so
+switching screens swaps the visible contents without redrawing from scratch.
 

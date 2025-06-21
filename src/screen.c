@@ -3,19 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char **screen_buf = NULL;
-static int **attr_buf = NULL;
-static int buf_rows = 0;
-static int buf_cols = 0;
+#define CUR_S (_vc_current_screen)
+
 
 /* queued regions to refresh when doupdate() is called */
 typedef struct refresh_rect {
     int top, left, height, width;
     struct refresh_rect *next;
 } refresh_rect;
-
-static refresh_rect *refresh_head = NULL;
-static int cursor_y = -1, cursor_x = -1;
 
 static void queue_region(int top, int left, int height, int width) {
     refresh_rect *node = malloc(sizeof(refresh_rect));
@@ -25,24 +20,32 @@ static void queue_region(int top, int left, int height, int width) {
     node->left = left;
     node->height = height;
     node->width = width;
-    node->next = refresh_head;
-    refresh_head = node;
+    if (!CUR_S)
+        return;
+    node->next = CUR_S->refresh_head;
+    CUR_S->refresh_head = node;
 }
 
 static void clear_queue(void) {
-    refresh_rect *n = refresh_head;
+    if (!CUR_S)
+        return;
+    refresh_rect *n = CUR_S->refresh_head;
     while (n) {
         refresh_rect *tmp = n->next;
         free(n);
         n = tmp;
     }
-    refresh_head = NULL;
-    cursor_y = cursor_x = -1;
+    CUR_S->refresh_head = NULL;
+    CUR_S->cursor_y = CUR_S->cursor_x = -1;
 }
 
 static int ensure_buffer(void) {
-    if (!stdscr)
+    if (!stdscr || !CUR_S)
         return -1;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
     if (screen_buf && attr_buf &&
         buf_rows == stdscr->maxy && buf_cols == stdscr->maxx)
         return 0;
@@ -76,20 +79,26 @@ static int ensure_buffer(void) {
             }
             free(screen_buf);
             free(attr_buf);
-            screen_buf = NULL;
-            attr_buf = NULL;
             return -1;
         }
         memset(screen_buf[r], ' ', buf_cols);
         for (int c = 0; c < buf_cols; ++c)
             attr_buf[r][c] = stdscr->bkgd;
     }
+    CUR_S->screen_buf = screen_buf;
+    CUR_S->attr_buf = attr_buf;
+    CUR_S->buf_rows = buf_rows;
+    CUR_S->buf_cols = buf_cols;
     return 0;
 }
 
 void _vc_screen_puts(int y, int x, const char *str, int attr) {
     if (ensure_buffer() == -1 || !str)
         return;
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (y < 0 || y >= buf_rows)
         return;
     int col = x;
@@ -101,17 +110,19 @@ void _vc_screen_puts(int y, int x, const char *str, int attr) {
 }
 
 void _vc_screen_free(void) {
-    if (screen_buf) {
-        for (int r = 0; r < buf_rows; ++r)
-            free(screen_buf[r]);
-        free(screen_buf);
-        screen_buf = NULL;
+    if (!CUR_S)
+        return;
+    if (CUR_S->screen_buf) {
+        for (int r = 0; r < CUR_S->buf_rows; ++r)
+            free(CUR_S->screen_buf[r]);
+        free(CUR_S->screen_buf);
+        CUR_S->screen_buf = NULL;
     }
-    if (attr_buf) {
-        for (int r = 0; r < buf_rows; ++r)
-            free(attr_buf[r]);
-        free(attr_buf);
-        attr_buf = NULL;
+    if (CUR_S->attr_buf) {
+        for (int r = 0; r < CUR_S->buf_rows; ++r)
+            free(CUR_S->attr_buf[r]);
+        free(CUR_S->attr_buf);
+        CUR_S->attr_buf = NULL;
     }
     clear_queue();
 }
@@ -125,6 +136,10 @@ int clear(void) {
         }
         return 0;
     }
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     for (int r = 0; r < buf_rows; ++r) {
         memset(screen_buf[r], ' ', buf_cols);
         for (int c = 0; c < buf_cols; ++c)
@@ -142,6 +157,10 @@ int clrtoeol(void) {
         fputs("\x1b[K", stdout);
         return 0;
     }
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (!stdscr || stdscr->cury >= buf_rows)
         return -1;
     if (stdscr->curx < buf_cols) {
@@ -157,6 +176,10 @@ int clrtobot(void) {
         fputs("\x1b[J", stdout);
         return 0;
     }
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (!stdscr || stdscr->cury >= buf_rows)
         return -1;
     clrtoeol();
@@ -175,6 +198,10 @@ int refresh(void) {
 void _vc_screen_refresh_region(int top, int left, int height, int width) {
     if (ensure_buffer() == -1)
         return;
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (top < 0 || left < 0 || top >= buf_rows || left >= buf_cols)
         return;
     int bottom = top + height;
@@ -208,6 +235,10 @@ void _vc_screen_scroll_region(int top, int left, int height, int width,
         return;
     if (lines == 0 || height <= 0 || width <= 0)
         return;
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (top < 0 || left < 0 || top + height > buf_rows || left + width > buf_cols)
         return;
 
@@ -244,8 +275,12 @@ void _vc_screen_scroll_region(int top, int left, int height, int width,
 
 int _vc_screen_get_cell(int y, int x, char *ch, int *attr)
 {
-    if (ensure_buffer() == -1)
+    if (ensure_buffer() == -1 || !CUR_S)
         return -1;
+    int buf_rows = CUR_S->buf_rows;
+    int buf_cols = CUR_S->buf_cols;
+    char **screen_buf = CUR_S->screen_buf;
+    int **attr_buf = CUR_S->attr_buf;
     if (y < 0 || y >= buf_rows || x < 0 || x >= buf_cols)
         return -1;
     if (ch)
@@ -256,17 +291,19 @@ int _vc_screen_get_cell(int y, int x, char *ch, int *attr)
 }
 
 int doupdate(void) {
-    refresh_rect *n = refresh_head;
+    if (!CUR_S)
+        return 0;
+    refresh_rect *n = CUR_S->refresh_head;
     while (n) {
         _vc_screen_refresh_region(n->top, n->left, n->height, n->width);
         refresh_rect *tmp = n->next;
         free(n);
         n = tmp;
     }
-    refresh_head = NULL;
-    if (cursor_y >= 0 && cursor_x >= 0)
-        printf("\x1b[%d;%dH", cursor_y + 1, cursor_x + 1);
-    cursor_y = cursor_x = -1;
+    CUR_S->refresh_head = NULL;
+    if (CUR_S->cursor_y >= 0 && CUR_S->cursor_x >= 0)
+        printf("\x1b[%d;%dH", CUR_S->cursor_y + 1, CUR_S->cursor_x + 1);
+    CUR_S->cursor_y = CUR_S->cursor_x = -1;
     return fflush(stdout);
 }
 
@@ -297,8 +334,10 @@ int wnoutrefresh(WINDOW *win) {
             memset(&win->dirty[start], 0, (size_t)(win->maxy - start));
         }
     }
-    cursor_y = win->begy + win->cury;
-    cursor_x = win->begx + win->curx;
+    if (CUR_S) {
+        CUR_S->cursor_y = win->begy + win->cury;
+        CUR_S->cursor_x = win->begx + win->curx;
+    }
     return 0;
 }
 

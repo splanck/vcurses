@@ -7,26 +7,30 @@
 int LINES = 0;
 int COLS = 0;
 
+#define CUR_S (_vc_current_screen)
+
 /* Linked list of all created windows */
 struct win_node {
     WINDOW *win;
     struct win_node *next;
 };
-static struct win_node *win_list = NULL;
+static struct win_node *win_list = NULL; /* unused fallback */
 
 void _vc_register_window(WINDOW *win)
 {
     struct win_node *n = malloc(sizeof(struct win_node));
-    if (!n)
+    if (!n || !CUR_S)
         return;
     n->win = win;
-    n->next = win_list;
-    win_list = n;
+    n->next = CUR_S->win_list;
+    CUR_S->win_list = n;
 }
 
 void _vc_unregister_window(WINDOW *win)
 {
-    struct win_node **cur = &win_list;
+    if (!CUR_S)
+        return;
+    struct win_node **cur = &CUR_S->win_list;
     while (*cur) {
         if ((*cur)->win == win) {
             struct win_node *tmp = *cur;
@@ -42,13 +46,18 @@ static void resize_all(int rows, int cols)
 {
     LINES = rows;
     COLS = cols;
+    if (CUR_S) {
+        CUR_S->lines = rows;
+        CUR_S->cols = cols;
+    }
     if (stdscr) {
         if (stdscr->cury >= rows) stdscr->cury = rows ? rows - 1 : 0;
         if (stdscr->curx >= cols) stdscr->curx = cols ? cols - 1 : 0;
         stdscr->maxy = rows;
         stdscr->maxx = cols;
     }
-    for (struct win_node *n = win_list; n; n = n->next) {
+    struct win_node *list = CUR_S ? CUR_S->win_list : NULL;
+    for (struct win_node *n = list; n; n = n->next) {
         WINDOW *w = n->win;
         if (!w || w == stdscr)
             continue;
@@ -91,11 +100,14 @@ void _vc_resize_init(void)
 void _vc_resize_shutdown(void)
 {
     signal(SIGWINCH, SIG_DFL);
-    while (win_list) {
-        struct win_node *tmp = win_list;
-        win_list = tmp->next;
+    struct win_node *list = CUR_S ? CUR_S->win_list : NULL;
+    while (list) {
+        struct win_node *tmp = list;
+        list = tmp->next;
         free(tmp);
     }
+    if (CUR_S)
+        CUR_S->win_list = NULL;
 }
 
 extern void _vc_screen_free(void);
