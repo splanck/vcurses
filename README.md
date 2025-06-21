@@ -75,7 +75,8 @@ window using the new attribute.
   character before deciding it's a lone escape key.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
-length has been reached.
+length has been reached. Basic formatted input is also provided by
+`scanw()` and `wscanw()` which parse the read line using `scanf` rules.
 
 When keypad mode is enabled with `keypad(win, true)`, `wgetch()` maps
 special keys to predefined constants such as `KEY_UP`, `KEY_F1`,

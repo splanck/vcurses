@@ -354,3 +354,21 @@ Text drawn to the terminal is encoded using the current locale. Programs should
 call `setlocale(LC_CTYPE, "")` early so multibyte conversion matches the
 expected encoding (typically UTF-8).
 
+## Formatted input
+
+`wscanw(win, fmt, ...)` reads a line from `win` and parses it according to
+`scanf(3)` rules. The helpers `scanw`, `mvwscanw` and `mvscanw` behave like
+their output counterparts, optionally moving the cursor first or defaulting to
+`stdscr`.
+
+```c
+int wscanw(WINDOW *win, const char *fmt, ...);
+int scanw(const char *fmt, ...);          /* stdscr wrapper */
+int mvwscanw(WINDOW *win, int y, int x, const char *fmt, ...);
+int mvscanw(int y, int x, const char *fmt, ...);  /* stdscr */
+```
+
+The return value matches `vsscanf()`&mdash;the number of successfully scanned
+items or `-1` on failure. Internally these functions use `wgetnstr` so input is
+limited to 1023 characters.
+
