@@ -190,6 +190,12 @@ wdelch(w);        /* hXllo */
 Only single byte characters are currently supported. Strings longer than the
 remaining space on the line are truncated.
 
+## Inserting and deleting lines
+
+Use `winsdelln(win, n)` to shift rows starting at the cursor. Positive `n`
+inserts blank lines while negative `n` removes lines. The wrappers
+`insertln()` and `deleteln()` operate on `stdscr`.
+
 ## Refreshing windows
 
 Call `refresh()` to write the full screen to the terminal. When only a
