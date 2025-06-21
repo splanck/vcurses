@@ -142,6 +142,23 @@ int prefresh(WINDOW *pad, int pminrow, int pmincol,
 `sminrow`, `smincol`, `smaxrow` and `smaxcol` specify the destination
 rectangle on screen.
 
+## Panels
+
+Panels provide simple stacking of windows. Each panel wraps a `WINDOW` and may
+be shown or hidden without destroying the underlying window. Newly created or
+shown panels are placed on top of the stack.
+
+```c
+PANEL *new_panel(WINDOW *win);  /* create a panel for a window */
+int hide_panel(PANEL *pan);     /* remove from the stack */
+int show_panel(PANEL *pan);     /* place back on top */
+void update_panels(void);       /* wnoutrefresh visible panels */
+```
+
+`update_panels()` iterates from the bottom panel upward calling
+`wnoutrefresh()` on each visible panel. Applications should call `doupdate()`
+afterwards to write the queued regions to the terminal.
+
 ## Scrolling windows
 
 The `wscrl` function scrolls a window by a number of lines. Positive values
