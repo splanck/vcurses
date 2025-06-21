@@ -31,8 +31,13 @@ static int read_number(int *out, char *delim)
     return 0;
 }
 
+static int esc_delay = 50;
+
 static int parse_escape_sequence(void) {
     char ch;
+    struct pollfd pfd = { .fd = STDIN_FILENO, .events = POLLIN };
+    if (poll(&pfd, 1, esc_delay) <= 0)
+        return 27;
     if (read(STDIN_FILENO, &ch, 1) != 1)
         return 27;
 
@@ -278,6 +283,10 @@ int wtimeout(WINDOW *win, int delay) {
     return 0;
 }
 
+int timeout(int delay) {
+    return wtimeout(stdscr, delay);
+}
+
 int nodelay(WINDOW *win, bool bf) {
     return wtimeout(win, bf ? 0 : -1);
 }
@@ -288,5 +297,12 @@ int halfdelay(int tenths) {
     if (cbreak() == -1)
         return -1;
     return wtimeout(stdscr, tenths * 100);
+}
+
+int set_escdelay(int ms) {
+    if (ms < 0)
+        return -1;
+    esc_delay = ms;
+    return 0;
 }
 
