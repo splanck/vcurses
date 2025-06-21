@@ -2,13 +2,18 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <poll.h>
+#include <wchar.h>
 
 /* mouse event queue helper */
 extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
 
 /* simple push-back stack for characters */
 #define INPUT_QSIZE 32
+#ifdef VCURSES_WIDE
+static wchar_t input_queue[INPUT_QSIZE];
+#else
 static int input_queue[INPUT_QSIZE];
+#endif
 static int input_qcount = 0;
 
 static int read_number(int *out, char *delim)
@@ -168,7 +173,11 @@ int wgetch(WINDOW *win) {
         return -1;
 
     if (input_qcount > 0) {
+#ifdef VCURSES_WIDE
+        int ch = (int)input_queue[--input_qcount];
+#else
         int ch = input_queue[--input_qcount];
+#endif
         if (win->keypad_mode) {
             if (ch == '\x7f' || ch == '\b')
                 return KEY_BACKSPACE;
@@ -205,11 +214,56 @@ int getch(void) {
     return wgetch(stdscr);
 }
 
+int wget_wch(WINDOW *win, wchar_t *wch) {
+    int ch = wgetch(win);
+    if (ch < 0)
+        return -1;
+    if (ch >= KEY_UP) {
+        if (wch)
+            *wch = ch;
+        return ch;
+    }
+    char c = (char)ch;
+#ifdef VCURSES_WIDE
+    mbstate_t st = {0};
+    wchar_t wc;
+    if (mbrtowc(&wc, &c, 1, &st) == (size_t)-1)
+        return -1;
+    if (wch)
+        *wch = wc;
+#else
+    if (wch)
+        *wch = (wchar_t)c;
+#endif
+    return 0;
+}
+
+int get_wch(wchar_t *wch) {
+    return wget_wch(stdscr, wch);
+}
+
 int ungetch(int ch) {
     if (input_qcount >= INPUT_QSIZE)
         return -1;
+#ifdef VCURSES_WIDE
+    input_queue[input_qcount++] = (wchar_t)ch;
+#else
     input_queue[input_qcount++] = ch;
+#endif
     return 0;
+}
+
+int unget_wch(wchar_t wch) {
+#ifdef VCURSES_WIDE
+    if (input_qcount >= INPUT_QSIZE)
+        return -1;
+    input_queue[input_qcount++] = wch;
+    return 0;
+#else
+    if (wch > 0x7f)
+        return -1;
+    return ungetch((int)wch);
+#endif
 }
 
 int wgetstr(WINDOW *win, char *buf) {

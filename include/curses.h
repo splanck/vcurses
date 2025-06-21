@@ -3,6 +3,7 @@
 
 #include "vcurses.h"
 #include <stdbool.h>
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,8 +31,12 @@ int waddch(WINDOW *win, char ch);
 int addch(char ch);
 int addstr(const char *str);
 int waddstr(WINDOW *win, const char *str);
+int wadd_wch(WINDOW *win, wchar_t wch);
+int add_wch(wchar_t wch);
 int mvwaddch(WINDOW *win, int y, int x, char ch);
 int mvaddch(int y, int x, char ch);
+int mvwadd_wch(WINDOW *win, int y, int x, wchar_t wch);
+int mvadd_wch(int y, int x, wchar_t wch);
 int mvwaddstr(WINDOW *win, int y, int x, const char *str);
 int mvaddstr(int y, int x, const char *str);
 int wprintw(WINDOW *win, const char *fmt, ...);
@@ -41,6 +46,9 @@ int mvprintw(int y, int x, const char *fmt, ...);
 int wgetch(WINDOW *win);
 int getch(void);
 int ungetch(int ch);
+int wget_wch(WINDOW *win, wchar_t *wch);
+int get_wch(wchar_t *wch);
+int unget_wch(wchar_t wch);
 int wgetstr(WINDOW *win, char *buf);
 int getstr(char *buf);
 int wgetnstr(WINDOW *win, char *buf, int n);

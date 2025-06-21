@@ -5,6 +5,13 @@
 extern "C" {
 #endif
 
+#ifdef VCURSES_WIDE
+#include <wchar.h>
+typedef wchar_t vcchar_t;
+#else
+typedef char vcchar_t;
+#endif
+
 typedef struct window {
     int begy, begx; /* origin */
     int maxy, maxx; /* size */
@@ -20,7 +27,7 @@ typedef struct window {
     int bkgd; /* background attributes */
     int is_pad; /* is this a pad */
     int pad_y, pad_x; /* offset into root pad */
-    char **pad_buf; /* backing buffer for pads */
+    vcchar_t **pad_buf; /* backing buffer for pads */
     int **pad_attr; /* attribute buffer for pads */
     unsigned char *dirty; /* per-line refresh flags */
 } WINDOW;

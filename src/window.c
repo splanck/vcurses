@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <limits.h>
+#include <wchar.h>
 
 /* functions from resize.c */
 extern void _vc_register_window(WINDOW *win);
@@ -155,7 +157,7 @@ int waddstr(WINDOW *win, const char *str) {
         int row = win->pad_y + win->cury;
         int col = win->pad_x + win->curx;
         for (const char *p = str; *p && row < root->maxy && col < root->maxx; ++p) {
-            root->pad_buf[row][col] = *p;
+            root->pad_buf[row][col] = (vcchar_t)*p;
             root->pad_attr[row][col] = win->attr;
             col++;
         }
@@ -178,10 +180,50 @@ int waddch(WINDOW *win, char ch) {
     return waddstr(win, buf);
 }
 
+int wadd_wch(WINDOW *win, wchar_t wch) {
+    if (!win)
+        return -1;
+#ifdef VCURSES_WIDE
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int row = win->pad_y + win->cury;
+        int col = win->pad_x + win->curx;
+        if (row >= root->maxy || col >= root->maxx)
+            return -1;
+        root->pad_buf[row][col] = wch;
+        root->pad_attr[row][col] = win->attr;
+        win->curx++;
+        mark_dirty(win, win->cury, 1);
+        return 0;
+    }
+#endif
+    char mb[MB_LEN_MAX + 1];
+    mbstate_t st = {0};
+    size_t n = wcrtomb(mb, wch, &st);
+    if (n == (size_t)-1)
+        return -1;
+    mb[n] = '\0';
+    return waddstr(win, mb);
+}
+
+int add_wch(wchar_t wch) {
+    return wadd_wch(stdscr, wch);
+}
+
 int mvwaddch(WINDOW *win, int y, int x, char ch) {
     if (wmove(win, y, x) == -1)
         return -1;
     return waddch(win, ch);
+}
+
+int mvwadd_wch(WINDOW *win, int y, int x, wchar_t wch) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return wadd_wch(win, wch);
+}
+
+int mvadd_wch(int y, int x, wchar_t wch) {
+    return mvwadd_wch(stdscr, y, x, wch);
 }
 
 int mvwaddstr(WINDOW *win, int y, int x, const char *str) {
@@ -319,7 +361,7 @@ int wborder(WINDOW *win,
             WINDOW *root = pad_root(win);
             int rr = win->pad_y;
             int cc = win->pad_x + x;
-            root->pad_buf[rr][cc] = buf[0];
+            root->pad_buf[rr][cc] = (vcchar_t)buf[0];
             root->pad_attr[rr][cc] = win->attr;
         } else {
             _vc_screen_puts(win->begy, win->begx + x, buf, win->attr);
@@ -336,7 +378,7 @@ int wborder(WINDOW *win,
                 WINDOW *root = pad_root(win);
                 int rr = win->pad_y + height - 1;
                 int cc = win->pad_x + x;
-                root->pad_buf[rr][cc] = buf[0];
+                root->pad_buf[rr][cc] = (vcchar_t)buf[0];
                 root->pad_attr[rr][cc] = win->bkgd;
             } else {
                 _vc_screen_puts(win->begy + height - 1, win->begx + x,
@@ -351,7 +393,7 @@ int wborder(WINDOW *win,
             WINDOW *root = pad_root(win);
             int rr = win->pad_y + y;
             int cc = win->pad_x;
-            root->pad_buf[rr][cc] = buf[0];
+            root->pad_buf[rr][cc] = (vcchar_t)buf[0];
             root->pad_attr[rr][cc] = win->attr;
         } else {
             _vc_screen_puts(win->begy + y, win->begx, buf, win->attr);
@@ -362,7 +404,7 @@ int wborder(WINDOW *win,
                 WINDOW *root = pad_root(win);
                 int rr = win->pad_y + y;
                 int cc = win->pad_x + width - 1;
-                root->pad_buf[rr][cc] = buf[0];
+                root->pad_buf[rr][cc] = (vcchar_t)buf[0];
                 root->pad_attr[rr][cc] = win->bkgd;
             } else {
                 _vc_screen_puts(win->begy + y, win->begx + width - 1,
@@ -394,7 +436,7 @@ int whline(WINDOW *win, char ch, int n) {
             int cc = win->pad_x + win->curx + i;
             if (rr >= root->maxy || cc >= root->maxx)
                 break;
-            root->pad_buf[rr][cc] = ch;
+            root->pad_buf[rr][cc] = (vcchar_t)ch;
             root->pad_attr[rr][cc] = win->attr;
         } else {
             _vc_screen_puts(win->begy + win->cury,
@@ -427,7 +469,7 @@ int wvline(WINDOW *win, char ch, int n) {
             int cc = win->pad_x + win->curx;
             if (rr >= root->maxy || cc >= root->maxx)
                 break;
-            root->pad_buf[rr][cc] = ch;
+            root->pad_buf[rr][cc] = (vcchar_t)ch;
             root->pad_attr[rr][cc] = win->attr;
         } else {
             _vc_screen_puts(win->begy + win->cury + i,
@@ -469,7 +511,7 @@ int werase(WINDOW *win) {
                 break;
             for (int c = 0; c < win->maxx && win->pad_x + c < root->maxx; ++c) {
                 int cc = win->pad_x + c;
-                root->pad_buf[rr][cc] = ' ';
+                root->pad_buf[rr][cc] = (vcchar_t)' ';
                 root->pad_attr[rr][cc] = win->attr;
             }
         }
@@ -503,7 +545,7 @@ int wclear(WINDOW *win) {
                 break;
             for (int c = 0; c < win->maxx && win->pad_x + c < root->maxx; ++c) {
                 int cc = win->pad_x + c;
-                root->pad_buf[rr][cc] = ' ';
+                root->pad_buf[rr][cc] = (vcchar_t)' ';
                 root->pad_attr[rr][cc] = win->attr;
             }
         }
@@ -540,7 +582,7 @@ int wclrtoeol(WINDOW *win) {
         if (rr >= root->maxy || cc >= root->maxx)
             return -1;
         for (int c = 0; c < len && cc + c < root->maxx; ++c) {
-            root->pad_buf[rr][cc + c] = ' ';
+            root->pad_buf[rr][cc + c] = (vcchar_t)' ';
             root->pad_attr[rr][cc + c] = win->bkgd;
         }
     } else {
@@ -574,7 +616,7 @@ int wclrtobot(WINDOW *win) {
             if (rr >= root->maxy || cc >= root->maxx)
                 break;
             for (int c = 0; c < len && cc + c < root->maxx; ++c) {
-                root->pad_buf[rr][cc + c] = ' ';
+                root->pad_buf[rr][cc + c] = (vcchar_t)' ';
                 root->pad_attr[rr][cc + c] = win->bkgd;
             }
         } else {
@@ -640,7 +682,7 @@ int winsch(WINDOW *win, char ch)
             root->pad_buf[rr][cc + i] = root->pad_buf[rr][cc + i - 1];
             root->pad_attr[rr][cc + i] = root->pad_attr[rr][cc + i - 1];
         }
-        root->pad_buf[rr][cc] = ch;
+        root->pad_buf[rr][cc] = (vcchar_t)ch;
         root->pad_attr[rr][cc] = win->attr;
     } else {
         int row = win->begy + win->cury;
@@ -690,7 +732,7 @@ int wdelch(WINDOW *win)
             root->pad_buf[rr][cc + i] = root->pad_buf[rr][cc + i + 1];
             root->pad_attr[rr][cc + i] = root->pad_attr[rr][cc + i + 1];
         }
-        root->pad_buf[rr][cc + len - 1] = ' ';
+        root->pad_buf[rr][cc + len - 1] = (vcchar_t)' ';
         root->pad_attr[rr][cc + len - 1] = win->attr;
     } else {
         int row = win->begy + win->cury;
@@ -777,13 +819,14 @@ int winsdelln(WINDOW *win, int n)
             for (int r = height - 1; r >= n; --r) {
                 memmove(&root->pad_buf[start + r][win->pad_x],
                         &root->pad_buf[start + r - n][win->pad_x],
-                        (size_t)width);
+                        sizeof(vcchar_t) * (size_t)width);
                 memmove(&root->pad_attr[start + r][win->pad_x],
                         &root->pad_attr[start + r - n][win->pad_x],
                         sizeof(int) * (size_t)width);
             }
             for (int r = 0; r < n; ++r) {
-                memset(&root->pad_buf[start + r][win->pad_x], ' ', (size_t)width);
+                for (int c = 0; c < width; ++c)
+                    root->pad_buf[start + r][win->pad_x + c] = (vcchar_t)' ';
                 for (int c = 0; c < width; ++c)
                     root->pad_attr[start + r][win->pad_x + c] = win->attr;
             }
@@ -792,13 +835,14 @@ int winsdelln(WINDOW *win, int n)
             for (int r = 0; r < height - n; ++r) {
                 memmove(&root->pad_buf[start + r][win->pad_x],
                         &root->pad_buf[start + r + n][win->pad_x],
-                        (size_t)width);
+                        sizeof(vcchar_t) * (size_t)width);
                 memmove(&root->pad_attr[start + r][win->pad_x],
                         &root->pad_attr[start + r + n][win->pad_x],
                         sizeof(int) * (size_t)width);
             }
             for (int r = height - n; r < height; ++r) {
-                memset(&root->pad_buf[start + r][win->pad_x], ' ', (size_t)width);
+                for (int c = 0; c < width; ++c)
+                    root->pad_buf[start + r][win->pad_x + c] = (vcchar_t)' ';
                 for (int c = 0; c < width; ++c)
                     root->pad_attr[start + r][win->pad_x + c] = win->attr;
             }
@@ -829,7 +873,7 @@ int wresize(WINDOW *win, int nlines, int ncols) {
     if (win->is_pad) {
         WINDOW *root = pad_root(win);
         if (!win->parent) {
-            char **nbuf = malloc(sizeof(char *) * nlines);
+            vcchar_t **nbuf = malloc(sizeof(vcchar_t *) * nlines);
             int **nattr = malloc(sizeof(int *) * nlines);
             if (!nbuf || !nattr) {
                 free(nbuf);
@@ -837,7 +881,7 @@ int wresize(WINDOW *win, int nlines, int ncols) {
                 return -1;
             }
             for (int r = 0; r < nlines; ++r) {
-                nbuf[r] = malloc(ncols);
+                nbuf[r] = malloc(sizeof(vcchar_t) * ncols);
                 nattr[r] = malloc(sizeof(int) * ncols);
                 if (!nbuf[r] || !nattr[r]) {
                     for (int i = 0; i <= r; ++i) {
@@ -860,7 +904,7 @@ int wresize(WINDOW *win, int nlines, int ncols) {
                         nbuf[r][c] = root->pad_buf[r][c];
                         nattr[r][c] = root->pad_attr[r][c];
                     } else {
-                        nbuf[r][c] = ' ';
+                        nbuf[r][c] = (vcchar_t)' ';
                         nattr[r][c] = win->attr;
                     }
                 }
