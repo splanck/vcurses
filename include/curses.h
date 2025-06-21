@@ -81,6 +81,7 @@ int scanw(const char *fmt, ...);
 int mvwscanw(WINDOW *win, int y, int x, const char *fmt, ...);
 int mvscanw(int y, int x, const char *fmt, ...);
 const char *keyname(int ch);
+int has_key(int keycode);
 int keypad(WINDOW *win, bool yes);
 int nodelay(WINDOW *win, bool bf);
 int notimeout(WINDOW *win, bool bf);
