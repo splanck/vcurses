@@ -70,6 +70,17 @@ int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...);
 int mvprintw(int y, int x, const char *fmt, ...);  /* stdscr */
 ```
 
+### Limiting output
+
+The `waddnstr` family writes at most `n` characters. Extra text is
+discarded before reaching the window.
+
+```c
+WINDOW *w = newwin(1, 5, 0, 0);
+waddnstr(w, "abcdef", 3);       /* prints "abc"    */
+mvwaddnstr(w, 0, 2, "xyz", 5); /* prints "xy"     */
+```
+
 ## Color customization
 
 Call `start_color()` to enable color handling. The RGB components of the
@@ -227,6 +238,12 @@ wdelch(w);        /* hXllo */
 
 Only single byte characters are currently supported. Strings longer than the
 remaining space on the line are truncated.
+
+```c
+WINDOW *t = newwin(1, 4, 0, 0);
+waddstr(t, "abcdef");       /* prints "abcd" */
+mvwaddnstr(t, 0, 0, "123456", 3); /* prints "123" */
+```
 
 ## Inserting and deleting lines
 
