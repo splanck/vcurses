@@ -263,6 +263,8 @@ int bkgdset(int attrs);
 int wbkgd(WINDOW *win, int attrs);
 int bkgd(int attrs);
 int curs_set(int visibility);
+int nl(void);
+int nonl(void);
 int beep(void);
 int flash(void);
 
