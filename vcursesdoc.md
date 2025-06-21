@@ -46,6 +46,41 @@ constants defined in `<curses.h>`.  These include:
 
 Regular printable characters are returned unchanged.
 
+### keyname lookup table
+
+`keyname(ch)` returns a string describing a key code. Printable ASCII
+characters are returned as one-character strings. Special codes resolve to
+the names shown below:
+
+| Code | String |
+|------|--------|
+| `KEY_UP` | "KEY_UP" |
+| `KEY_DOWN` | "KEY_DOWN" |
+| `KEY_LEFT` | "KEY_LEFT" |
+| `KEY_RIGHT` | "KEY_RIGHT" |
+| `KEY_HOME` | "KEY_HOME" |
+| `KEY_END` | "KEY_END" |
+| `KEY_NPAGE` | "KEY_NPAGE" |
+| `KEY_PPAGE` | "KEY_PPAGE" |
+| `KEY_IC` | "KEY_IC" |
+| `KEY_DC` | "KEY_DC" |
+| `KEY_BACKSPACE` | "KEY_BACKSPACE" |
+| `KEY_ENTER` | "KEY_ENTER" |
+| `KEY_F1` | "KEY_F1" |
+| `KEY_F2` | "KEY_F2" |
+| `KEY_F3` | "KEY_F3" |
+| `KEY_F4` | "KEY_F4" |
+| `KEY_F5` | "KEY_F5" |
+| `KEY_F6` | "KEY_F6" |
+| `KEY_F7` | "KEY_F7" |
+| `KEY_F8` | "KEY_F8" |
+| `KEY_F9` | "KEY_F9" |
+| `KEY_F10` | "KEY_F10" |
+| `KEY_F11` | "KEY_F11" |
+| `KEY_F12` | "KEY_F12" |
+| `KEY_MOUSE` | "KEY_MOUSE" |
+| `KEY_RESIZE` | "KEY_RESIZE" |
+
 ## Input timeouts
 
 Input waiting behaviour can be configured per window.  The helpers

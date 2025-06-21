@@ -85,6 +85,8 @@ When keypad mode is enabled with `keypad(win, true)`, `wgetch()` maps
 special keys to predefined constants such as `KEY_UP`, `KEY_F1`,
 `KEY_BACKSPACE` and `KEY_ENTER`.  A full list is available in
 [vcursesdoc.md](vcursesdoc.md#key-codes).
+Use `keyname(ch)` to convert a returned key code back to a readable
+string.
 
 ## Terminal modes
 
