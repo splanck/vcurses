@@ -59,11 +59,16 @@ int timeout(int ms);                  /* stdscr wrapper */
 int halfdelay(int tenths);           /* sets cbreak timeout */
 int notimeout(WINDOW *win, bool bf); /* disable ESC delay */
 int set_escdelay(int ms);            /* ESC detection delay */
+int meta(WINDOW *win, bool bf);      /* return 8-bit input */
 ```
 
 When `notimeout` is enabled, `wgetch()` does not pause after an ESC
 character before returning it.  Otherwise the delay from `set_escdelay`
 is used to decide whether an escape sequence is pending.
+
+Calling `meta(win, true)` causes `wgetch()` to return 8-bit characters
+unchanged. When disabled the high bit is stripped so bytes above 0x7F are
+masked to 7 bits.
 
 ## Formatted output
 

@@ -87,6 +87,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->clearok = 0;
     win->delay = -1;
     win->notimeout = 0;
+    win->meta_mode = 0;
     win->leaveok = 0;
     win->attr = COLOR_PAIR(0);
     win->bkgd = COLOR_PAIR(0);

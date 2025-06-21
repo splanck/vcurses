@@ -123,6 +123,25 @@ START_TEST(test_keypad_translates_enter)
 }
 END_TEST
 
+START_TEST(test_meta_masks_high_bit)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    ungetch(0xC1);
+    ck_assert_int_eq(wgetch(w), 0x41);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_meta_returns_8bit)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    meta(w, true);
+    ungetch(0xC1);
+    ck_assert_int_eq(wgetch(w), 0xC1);
+    delwin(w);
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -136,6 +155,8 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_getnstr_wrapper);
     tcase_add_test(tc, test_keypad_translates_backspace);
     tcase_add_test(tc, test_keypad_translates_enter);
+    tcase_add_test(tc, test_meta_masks_high_bit);
+    tcase_add_test(tc, test_meta_returns_8bit);
     suite_add_tcase(s, tc);
     return s;
 }

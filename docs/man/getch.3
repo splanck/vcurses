@@ -10,7 +10,9 @@ getch \- read a character from the standard screen
 .SH DESCRIPTION
 The \fBgetch()\fP function reads the next character from \fIstdscr\fP.
 If keypad mode is enabled on \fIstdscr\fP, special keys are returned as
-their predefined KEY_* codes.
+their predefined KEY_* codes.  When meta mode is on for \fIstdscr\fP using
+\fBmeta(stdscr, true)\fP, bytes above 0x7F are returned unchanged.  Otherwise
+the high bit is cleared.
 .SH RETURN VALUE
 On success the read character or key code is returned. On error
 -1 is returned.

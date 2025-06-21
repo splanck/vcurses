@@ -24,6 +24,7 @@ typedef struct window {
     int clearok; /* full screen clear requested */
     int delay; /* input delay in ms (-1 blocking) */
     int notimeout; /* disable ESC delay */
+    int meta_mode; /* return 8-bit input */
     int leaveok; /* don't reposition cursor on refresh */
     int attr; /* current attributes */
     int bkgd; /* background attributes */

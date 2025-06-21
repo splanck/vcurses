@@ -71,6 +71,7 @@ static SCREEN *alloc_screen(void) {
     scr->stdscr->top_margin = 0;
     scr->stdscr->bottom_margin = rows ? rows - 1 : 0;
     scr->stdscr->delay = -1;
+    scr->stdscr->meta_mode = 0;
     scr->stdscr->attr = COLOR_PAIR(0);
     scr->stdscr->bkgd = COLOR_PAIR(0);
     scr->lines = rows;

@@ -187,6 +187,12 @@ int wgetch(WINDOW *win) {
             if (ch == '\n' || ch == '\r')
                 return KEY_ENTER;
         }
+        if (ch < KEY_UP) {
+            unsigned char uc = (unsigned char)ch;
+            if (!win->meta_mode)
+                uc &= 0x7F;
+            return uc;
+        }
         return ch;
     }
 
@@ -210,7 +216,10 @@ int wgetch(WINDOW *win) {
             return KEY_ENTER;
     }
 
-    return (unsigned char)c;
+    unsigned char uc = (unsigned char)c;
+    if (!win->meta_mode)
+        uc &= 0x7F;
+    return uc;
 }
 
 int getch(void) {
@@ -352,6 +361,13 @@ int notimeout(WINDOW *win, bool bf) {
     if (!win)
         return -1;
     win->notimeout = bf ? 1 : 0;
+    return 0;
+}
+
+int meta(WINDOW *win, bool bf) {
+    if (!win)
+        return -1;
+    win->meta_mode = bf ? 1 : 0;
     return 0;
 }
 
