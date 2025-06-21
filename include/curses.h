@@ -4,6 +4,7 @@
 #include "vcurses.h"
 #include <stdbool.h>
 #include <wchar.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,6 +15,24 @@ extern "C" {
 extern WINDOW *stdscr;
 extern int LINES;
 extern int COLS;
+
+struct refresh_rect;
+struct win_node;
+
+typedef struct screen {
+    WINDOW *stdscr;
+    int lines, cols;
+    char **screen_buf;
+    int **attr_buf;
+    int buf_rows, buf_cols;
+    struct refresh_rect *refresh_head;
+    int cursor_y, cursor_x;
+    struct win_node *win_list;
+} SCREEN;
+
+extern SCREEN *_vc_current_screen;
+SCREEN *newterm(const char *type, FILE *outf, FILE *inf);
+SCREEN *set_term(SCREEN *scr);
 
 WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
 int delwin(WINDOW *win);
