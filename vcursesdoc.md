@@ -126,6 +126,12 @@ int nonl(void);      /* disable newline mapping */
 translation so each `\n` sent to the terminal becomes a carriage return
 followed by a line feed. `nonl()` leaves `\n` unchanged.
 
+## Timing functions
+
+`napms(ms)` sleeps for `ms` milliseconds without affecting the terminal.
+Input waiting can also be tuned with `wtimeout`, `halfdelay` and
+`set_escdelay`, all described earlier under [Input timeouts](#input-timeouts).
+
 ## Formatted output
 
 Use `wprintw(win, fmt, ...)` to print formatted text directly into a window.

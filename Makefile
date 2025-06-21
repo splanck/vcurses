@@ -5,7 +5,7 @@ BUILD := build
 LIB := libvcurses.a
 SRCS := src/vcurses.c src/init.c src/curses.c src/input.c src/keyname.c \
        src/window.c src/pad.c src/screen.c src/color.c src/resize.c \
-       src/term_modes.c src/mouse.c src/copywin.c src/panel.c
+       src/term_modes.c src/mouse.c src/copywin.c src/panel.c src/napms.c
 OBJS := $(patsubst src/%.c,$(BUILD)/%.o,$(SRCS))
 
 # Unit test configuration
