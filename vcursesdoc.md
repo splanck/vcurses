@@ -370,6 +370,13 @@ its parent and evaluate to `-1` if the window has no parent.  These
 macros operate purely on the `WINDOW` structure and therefore behave
 compatibly with applications written for ncurses.
 
+## Cursor behavior
+
+`wrefresh(win)` normally moves the terminal cursor to the window's current
+location. Calling `leaveok(win, true)` suppresses this repositioning so the
+cursor stays wherever it was before the refresh. Pass `false` to restore the
+default behaviour.
+
 ## Unicode handling
 
 When the library is compiled with `-DVCURSES_WIDE` the backing buffers use

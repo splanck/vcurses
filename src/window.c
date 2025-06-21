@@ -87,6 +87,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->clearok = 0;
     win->delay = -1;
     win->notimeout = 0;
+    win->leaveok = 0;
     win->attr = COLOR_PAIR(0);
     win->bkgd = COLOR_PAIR(0);
     win->is_pad = 0;
@@ -376,6 +377,13 @@ int clearok(WINDOW *win, bool bf) {
     return 0;
 }
 
+int leaveok(WINDOW *win, bool bf) {
+    if (!win)
+        return -1;
+    win->leaveok = bf ? 1 : 0;
+    return 0;
+}
+
 int wsetscrreg(WINDOW *win, int top, int bottom) {
     if (!win || top < 0 || bottom < top || bottom >= win->maxy)
         return -1;
@@ -595,8 +603,17 @@ extern int doupdate(void);
 int wrefresh(WINDOW *win) {
     if (!win)
         return -1;
+    int saved_y = -1, saved_x = -1;
+    if (win->leaveok && _vc_current_screen) {
+        saved_y = _vc_current_screen->cursor_y;
+        saved_x = _vc_current_screen->cursor_x;
+    }
     if (wnoutrefresh(win) == -1)
         return -1;
+    if (win->leaveok && _vc_current_screen) {
+        _vc_current_screen->cursor_y = saved_y;
+        _vc_current_screen->cursor_x = saved_x;
+    }
     return doupdate();
 }
 

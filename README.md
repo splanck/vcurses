@@ -170,6 +170,11 @@ getmaxyx(win, y, x);   /* window size */
 
 Single-value helpers like `getcurx(win)` and `getmaxy(win)` are also provided.
 
+## Cursor behavior
+
+`leaveok(win, true)` prevents `wrefresh(win)` from repositioning the terminal
+cursor. Pass `false` to restore the normal behaviour.
+
 ## Formatted output
 
 `wprintw(win, fmt, ...)` works like `printf` but writes into a window.
