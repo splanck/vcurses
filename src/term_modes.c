@@ -38,3 +38,13 @@ int noraw(void) {
     orig_termios.c_lflag |= ICANON | ISIG;
     return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
 }
+
+int nl(void) {
+    orig_termios.c_oflag |= ONLCR;
+    return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+}
+
+int nonl(void) {
+    orig_termios.c_oflag &= ~ONLCR;
+    return tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
+}

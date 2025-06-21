@@ -91,7 +91,9 @@ special keys to predefined constants such as `KEY_UP`, `KEY_F1`,
 `initscr()` enters raw mode with echo disabled. Call `noraw()` to
 restore normal signal handling and `raw()` to enable raw mode again.
 Line buffering and echo can also be toggled with `cbreak()`/
-`nocbreak()` and `echo()`/`noecho()`.
+`nocbreak()` and `echo()`/`noecho()`.  Newline translation can be
+controlled with `nl()` to map `\n` to `\r\n` or `nonl()` to disable
+the mapping.
 
 ## Alerts
 

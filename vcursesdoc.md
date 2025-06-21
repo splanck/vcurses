@@ -70,6 +70,25 @@ Calling `meta(win, true)` causes `wgetch()` to return 8-bit characters
 unchanged. When disabled the high bit is stripped so bytes above 0x7F are
 masked to 7 bits.
 
+## Terminal modes
+
+Functions that control how input and output are processed:
+
+```c
+int echo(void);      /* enable input echo */
+int noecho(void);    /* disable input echo */
+int cbreak(void);    /* disable line buffering */
+int nocbreak(void);
+int raw(void);       /* disable signals and line buffering */
+int noraw(void);
+int nl(void);        /* map \n to \r\n on output */
+int nonl(void);      /* disable newline mapping */
+```
+
+`initscr()` enters raw mode with echo disabled. `nl()` enables newline
+translation so each `\n` sent to the terminal becomes a carriage return
+followed by a line feed. `nonl()` leaves `\n` unchanged.
+
 ## Formatted output
 
 Use `wprintw(win, fmt, ...)` to print formatted text directly into a window.
