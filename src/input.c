@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <wchar.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 /* mouse event queue helper */
 extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
@@ -358,5 +360,52 @@ int set_escdelay(int ms) {
         return -1;
     esc_delay = ms;
     return 0;
+}
+
+static int vwscanw_internal(WINDOW *win, const char *fmt, va_list ap) {
+    if (!win || !fmt)
+        return -1;
+
+    char buf[1024];
+    if (wgetnstr(win, buf, (int)sizeof(buf) - 1) == -1)
+        return -1;
+
+    return vsscanf(buf, fmt, ap);
+}
+
+int wscanw(WINDOW *win, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwscanw_internal(win, fmt, ap);
+    va_end(ap);
+    return r;
+}
+
+int scanw(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwscanw_internal(stdscr, fmt, ap);
+    va_end(ap);
+    return r;
+}
+
+int mvwscanw(WINDOW *win, int y, int x, const char *fmt, ...) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwscanw_internal(win, fmt, ap);
+    va_end(ap);
+    return r;
+}
+
+int mvscanw(int y, int x, const char *fmt, ...) {
+    if (move(y, x) == -1)
+        return -1;
+    va_list ap;
+    va_start(ap, fmt);
+    int r = vwscanw_internal(stdscr, fmt, ap);
+    va_end(ap);
+    return r;
 }
 
