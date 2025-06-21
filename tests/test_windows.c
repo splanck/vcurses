@@ -12,6 +12,7 @@ Suite *erase_suite(void);
 Suite *touch_suite(void);
 Suite *clear_suite(void);
 Suite *term_modes_suite(void);
+Suite *has_key_suite(void);
 
 START_TEST(test_newwin_basic)
 {
@@ -245,6 +246,7 @@ int main(void)
     Suite *s10 = touch_suite();
     Suite *s11 = clear_suite();
     Suite *s12 = term_modes_suite();
+    Suite *s13 = has_key_suite();
     SRunner *sr = srunner_create(s1);
     srunner_add_suite(sr, s2);
     srunner_add_suite(sr, s3);
@@ -257,6 +259,7 @@ int main(void)
     srunner_add_suite(sr, s10);
     srunner_add_suite(sr, s11);
     srunner_add_suite(sr, s12);
+    srunner_add_suite(sr, s13);
     srunner_run_all(sr, CK_ENV); // use CK_ENV to get TAP or not
     int nf = srunner_ntests_failed(sr);
     srunner_free(sr);

@@ -86,7 +86,8 @@ special keys to predefined constants such as `KEY_UP`, `KEY_F1`,
 `KEY_BACKSPACE` and `KEY_ENTER`.  A full list is available in
 [vcursesdoc.md](vcursesdoc.md#key-codes).
 Use `keyname(ch)` to convert a returned key code back to a readable
-string.
+string. The helper `has_key(code)` returns non-zero when `code` is one of
+the defined `KEY_*` constants.
 
 ## Terminal modes
 

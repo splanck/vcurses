@@ -45,6 +45,7 @@ constants defined in `<curses.h>`.  These include:
 - `KEY_MOUSE` and `KEY_RESIZE`
 
 Regular printable characters are returned unchanged.
+`has_key(code)` returns non-zero when `code` matches one of these constants.
 
 ### keyname lookup table
 

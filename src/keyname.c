@@ -44,3 +44,11 @@ const char *keyname(int ch) {
     }
     return NULL;
 }
+
+int has_key(int keycode) {
+    for (unsigned i = 0; i < sizeof(key_table)/sizeof(key_table[0]); ++i) {
+        if (key_table[i].code == keycode)
+            return 1;
+    }
+    return 0;
+}
