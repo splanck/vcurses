@@ -3,6 +3,8 @@
 #include <sys/time.h>
 #include <signal.h>
 
+extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
+
 static long diff_ms(struct timeval *a, struct timeval *b) {
     return (b->tv_sec - a->tv_sec) * 1000L + (b->tv_usec - a->tv_usec)/1000L;
 }
@@ -142,6 +144,29 @@ START_TEST(test_meta_returns_8bit)
 }
 END_TEST
 
+START_TEST(test_flushinp_clears_queue)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    ungetch('z');
+    flushinp();
+    nodelay(w, true);
+    ck_assert_int_eq(wgetch(w), -1);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_flushinp_drops_mouse)
+{
+    mmask_t old;
+    mousemask(BUTTON1_PRESSED, &old);
+    _vc_mouse_push_event(BUTTON1_PRESSED, 0, 0);
+    flushinp();
+    MEVENT ev;
+    ck_assert_int_eq(getmouse(&ev), -1);
+    mousemask(old, NULL);
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -157,6 +182,8 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_keypad_translates_enter);
     tcase_add_test(tc, test_meta_masks_high_bit);
     tcase_add_test(tc, test_meta_returns_8bit);
+    tcase_add_test(tc, test_flushinp_clears_queue);
+    tcase_add_test(tc, test_flushinp_drops_mouse);
     suite_add_tcase(s, tc);
     return s;
 }

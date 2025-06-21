@@ -77,6 +77,7 @@ window using the new attribute.
 - `meta(win, true)` causes `wgetch()` to return 8-bit input values
   instead of masking them to 7 bits.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
+- `flushinp()` discards unread input and pending mouse events.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached. Basic formatted input is also provided by
 `scanw()` and `wscanw()` which parse the read line using `scanf` rules.
