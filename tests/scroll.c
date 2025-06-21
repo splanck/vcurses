@@ -65,6 +65,23 @@ START_TEST(test_scroll_moves_content)
 }
 END_TEST
 
+START_TEST(test_scroll_uses_bkgd)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(2,1,0,0);
+    scrollok(stdscr, true);
+    wbkgdset(stdscr, A_UNDERLINE);
+    waddch(stdscr, 'a');
+    wmove(stdscr,1,0); waddch(stdscr, 'b');
+    ck_assert_int_eq(scroll(stdscr), 0);
+    int attr;
+    _vc_screen_get_cell(1,0,NULL,&attr);
+    ck_assert_int_eq(attr, A_UNDERLINE);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 START_TEST(test_wsetscrreg_values)
 {
     WINDOW *w = newwin(3,1,0,0);
@@ -105,6 +122,7 @@ Suite *scroll_suite(void)
     tcase_add_test(tc, test_wscrl_downward);
     tcase_add_test(tc, test_scroll_requires_flag);
     tcase_add_test(tc, test_scroll_moves_content);
+    tcase_add_test(tc, test_scroll_uses_bkgd);
     tcase_add_test(tc, test_wsetscrreg_values);
     tcase_add_test(tc, test_scroll_respects_region);
     suite_add_tcase(s, tc);

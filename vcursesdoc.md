@@ -243,6 +243,22 @@ clearok(stdscr, true);
 wrefresh(stdscr); /* screen is cleared */
 ```
 
+## Background attributes
+
+Every window maintains a background attribute used whenever blank cells are
+written by clearing or scrolling operations. Adjust it with
+`wbkgdset(win, attr)` or `bkgdset(attr)` for `stdscr`. The helper
+`wbkgd(win, attr)` updates the attribute and clears the window so existing
+spaces adopt the new value.
+
+```c
+WINDOW *log = newwin(3, 10, 0, 0);
+wbkgdset(log, COLOR_PAIR(2));
+werase(log);            /* blanks use pair 2 */
+scrollok(log, true);
+wscrl(log, 1);          /* inserted line also uses pair 2 */
+```
+
 ## Copying windows
 
 Use `overwrite(src, dst)` to duplicate the contents of one window into

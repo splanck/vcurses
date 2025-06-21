@@ -17,6 +17,7 @@ typedef struct window {
     int clearok; /* full screen clear requested */
     int delay; /* input delay in ms (-1 blocking) */
     int attr; /* current attributes */
+    int bkgd; /* background attributes */
     int is_pad; /* is this a pad */
     int pad_y, pad_x; /* offset into root pad */
     char **pad_buf; /* backing buffer for pads */

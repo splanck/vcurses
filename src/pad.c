@@ -31,6 +31,8 @@ WINDOW *newpad(int nlines, int ncols) {
     win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
+    win->bkgd = COLOR_PAIR(0);
+    win->bkgd = COLOR_PAIR(0);
     win->is_pad = 1;
     win->pad_y = 0;
     win->pad_x = 0;
@@ -62,7 +64,7 @@ WINDOW *newpad(int nlines, int ncols) {
         }
         memset(win->pad_buf[r], ' ', ncols);
         for (int c = 0; c < ncols; ++c)
-            win->pad_attr[r][c] = win->attr;
+            win->pad_attr[r][c] = win->bkgd;
     }
     memset(win->dirty, 1, nlines);
     _vc_register_window(win);

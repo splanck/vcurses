@@ -50,7 +50,7 @@ static int ensure_buffer(void) {
         }
         memset(screen_buf[r], ' ', buf_cols);
         for (int c = 0; c < buf_cols; ++c)
-            attr_buf[r][c] = stdscr->attr;
+            attr_buf[r][c] = stdscr->bkgd;
     }
     return 0;
 }
@@ -95,7 +95,7 @@ int clear(void) {
     for (int r = 0; r < buf_rows; ++r) {
         memset(screen_buf[r], ' ', buf_cols);
         for (int c = 0; c < buf_cols; ++c)
-            attr_buf[r][c] = stdscr->attr;
+            attr_buf[r][c] = stdscr->bkgd;
     }
     if (stdscr) {
         stdscr->cury = 0;
@@ -114,7 +114,7 @@ int clrtoeol(void) {
     if (stdscr->curx < buf_cols) {
         memset(&screen_buf[stdscr->cury][stdscr->curx], ' ', buf_cols - stdscr->curx);
         for (int c = stdscr->curx; c < buf_cols; ++c)
-            attr_buf[stdscr->cury][c] = stdscr->attr;
+            attr_buf[stdscr->cury][c] = stdscr->bkgd;
     }
     return 0;
 }
@@ -130,7 +130,7 @@ int clrtobot(void) {
     for (int r = stdscr->cury + 1; r < buf_rows; ++r) {
         memset(screen_buf[r], ' ', buf_cols);
         for (int c = 0; c < buf_cols; ++c)
-            attr_buf[r][c] = stdscr->attr;
+            attr_buf[r][c] = stdscr->bkgd;
     }
     return 0;
 }

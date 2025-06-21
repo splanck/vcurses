@@ -67,6 +67,7 @@ WINDOW *initscr(void) {
     stdscr->bottom_margin = rows ? rows - 1 : 0;
     stdscr->delay = -1;
     stdscr->attr = COLOR_PAIR(0);
+    stdscr->bkgd = COLOR_PAIR(0);
 
     return stdscr;
 }

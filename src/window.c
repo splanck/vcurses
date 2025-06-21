@@ -43,6 +43,7 @@ WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x) {
     win->clearok = 0;
     win->delay = -1;
     win->attr = COLOR_PAIR(0);
+    win->bkgd = COLOR_PAIR(0);
     win->is_pad = 0;
     win->pad_y = 0;
     win->pad_x = 0;
@@ -274,7 +275,7 @@ int wscrl(WINDOW *win, int lines) {
         count = -height;
 
     _vc_screen_scroll_region(region_top, win->begx, height, win->maxx,
-                             count, win->attr);
+                             count, win->bkgd);
     mark_dirty(win, win->top_margin, height);
     return 0;
 }
@@ -336,7 +337,7 @@ int wborder(WINDOW *win,
                 int rr = win->pad_y + height - 1;
                 int cc = win->pad_x + x;
                 root->pad_buf[rr][cc] = buf[0];
-                root->pad_attr[rr][cc] = win->attr;
+                root->pad_attr[rr][cc] = win->bkgd;
             } else {
                 _vc_screen_puts(win->begy + height - 1, win->begx + x,
                                 buf, win->attr);
@@ -362,7 +363,7 @@ int wborder(WINDOW *win,
                 int rr = win->pad_y + y;
                 int cc = win->pad_x + width - 1;
                 root->pad_buf[rr][cc] = buf[0];
-                root->pad_attr[rr][cc] = win->attr;
+                root->pad_attr[rr][cc] = win->bkgd;
             } else {
                 _vc_screen_puts(win->begy + y, win->begx + width - 1,
                                 buf, win->attr);
@@ -504,7 +505,7 @@ int werase(WINDOW *win) {
         memset(spaces, ' ', win->maxx);
         spaces[win->maxx] = '\0';
         for (int r = 0; r < win->maxy; ++r)
-            _vc_screen_puts(win->begy + r, win->begx, spaces, win->attr);
+            _vc_screen_puts(win->begy + r, win->begx, spaces, win->bkgd);
         free(spaces);
     }
 
@@ -538,7 +539,7 @@ int wclear(WINDOW *win) {
         memset(spaces, ' ', win->maxx);
         spaces[win->maxx] = '\0';
         for (int r = 0; r < win->maxy; ++r)
-            _vc_screen_puts(win->begy + r, win->begx, spaces, win->attr);
+            _vc_screen_puts(win->begy + r, win->begx, spaces, win->bkgd);
         free(spaces);
     }
 
@@ -565,7 +566,7 @@ int wclrtoeol(WINDOW *win) {
             return -1;
         for (int c = 0; c < len && cc + c < root->maxx; ++c) {
             root->pad_buf[rr][cc + c] = ' ';
-            root->pad_attr[rr][cc + c] = win->attr;
+            root->pad_attr[rr][cc + c] = win->bkgd;
         }
     } else {
         char *spaces = malloc(len + 1);
@@ -574,7 +575,7 @@ int wclrtoeol(WINDOW *win) {
         memset(spaces, ' ', len);
         spaces[len] = '\0';
         _vc_screen_puts(win->begy + win->cury, win->begx + win->curx,
-                        spaces, win->attr);
+                        spaces, win->bkgd);
         free(spaces);
     }
     mark_dirty(win, win->cury, 1);
@@ -599,7 +600,7 @@ int wclrtobot(WINDOW *win) {
                 break;
             for (int c = 0; c < len && cc + c < root->maxx; ++c) {
                 root->pad_buf[rr][cc + c] = ' ';
-                root->pad_attr[rr][cc + c] = win->attr;
+                root->pad_attr[rr][cc + c] = win->bkgd;
             }
         } else {
             char *spaces = malloc(len + 1);
@@ -608,7 +609,7 @@ int wclrtobot(WINDOW *win) {
             memset(spaces, ' ', len);
             spaces[len] = '\0';
             _vc_screen_puts(win->begy + r, win->begx + start,
-                            spaces, win->attr);
+                            spaces, win->bkgd);
             free(spaces);
         }
     }
