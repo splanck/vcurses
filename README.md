@@ -116,6 +116,10 @@ Use `wscrl(win, lines)` to scroll a window explicitly. A positive `lines`
 value scrolls the region up while a negative value scrolls it down. Newly
 exposed lines are cleared using the window's current attributes.
 Calling `scroll(win)` moves a window up by one line if scrolling is enabled.
+The portion affected by scrolling can be restricted with
+`wsetscrreg(win, top, bottom)` (or `setscrreg` for `stdscr`). The
+`top` and `bottom` arguments specify the first and last lines of the
+scrolling region relative to the window.
 
 ## Moving windows
 

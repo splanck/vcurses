@@ -51,6 +51,8 @@ int wtimeout(WINDOW *win, int delay);
 int halfdelay(int tenths);
 int scrollok(WINDOW *win, bool bf);
 int clearok(WINDOW *win, bool bf);
+int wsetscrreg(WINDOW *win, int top, int bottom);
+int setscrreg(int top, int bottom);
 int wscrl(WINDOW *win, int lines);
 int scroll(WINDOW *win);
 int wborder(WINDOW *win,

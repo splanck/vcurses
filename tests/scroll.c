@@ -65,6 +65,35 @@ START_TEST(test_scroll_moves_content)
 }
 END_TEST
 
+START_TEST(test_wsetscrreg_values)
+{
+    WINDOW *w = newwin(3,1,0,0);
+    ck_assert_int_eq(wsetscrreg(w,1,2), 0);
+    ck_assert_int_eq(w->top_margin, 1);
+    ck_assert_int_eq(w->bottom_margin, 2);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_scroll_respects_region)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(3,1,0,0);
+    scrollok(stdscr, true);
+    waddch(stdscr, '1');
+    wmove(stdscr,1,0); waddch(stdscr, '2');
+    wmove(stdscr,2,0); waddch(stdscr, '3');
+    wsetscrreg(stdscr,1,2);
+    ck_assert_int_eq(scroll(stdscr), 0);
+    char ch;
+    _vc_screen_get_cell(0,0,&ch,NULL); ck_assert_int_eq(ch,'1');
+    _vc_screen_get_cell(1,0,&ch,NULL); ck_assert_int_eq(ch,'3');
+    _vc_screen_get_cell(2,0,&ch,NULL); ck_assert_int_eq(ch,' ');
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 Suite *scroll_suite(void)
 {
     Suite *s = suite_create("scroll");
@@ -76,6 +105,8 @@ Suite *scroll_suite(void)
     tcase_add_test(tc, test_wscrl_downward);
     tcase_add_test(tc, test_scroll_requires_flag);
     tcase_add_test(tc, test_scroll_moves_content);
+    tcase_add_test(tc, test_wsetscrreg_values);
+    tcase_add_test(tc, test_scroll_respects_region);
     suite_add_tcase(s, tc);
     return s;
 }
