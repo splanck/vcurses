@@ -11,6 +11,48 @@ extern void _vc_register_window(WINDOW *win);
 extern void _vc_unregister_window(WINDOW *win);
 static int vwprintw_internal(WINDOW *win, const char *fmt, va_list ap);
 
+static char acs_translate(char ch) {
+    switch ((unsigned char)ch) {
+    case ACS_ULCORNER:
+    case ACS_URCORNER:
+    case ACS_LLCORNER:
+    case ACS_LRCORNER:
+    case ACS_LTEE:
+    case ACS_RTEE:
+    case ACS_TTEE:
+    case ACS_BTEE:
+    case ACS_PLUS:
+        return '+';
+    case ACS_HLINE:
+    case ACS_S1:
+    case ACS_S9:
+        return '-';
+    case ACS_VLINE:
+        return '|';
+    case ACS_DIAMOND:
+    case ACS_BOARD:
+    case ACS_LANTERN:
+    case ACS_BLOCK:
+        return '#';
+    case ACS_CKBOARD:
+        return 'X';
+    case ACS_DEGREE:
+    case ACS_PLMINUS:
+    case ACS_BULLET:
+        return '*';
+    case ACS_LARROW:
+        return '<';
+    case ACS_RARROW:
+        return '>';
+    case ACS_UARROW:
+        return '^';
+    case ACS_DARROW:
+        return 'v';
+    default:
+        return ch;
+    }
+}
+
 static void mark_dirty(WINDOW *win, int start, int count)
 {
     if (!win || !win->dirty)
@@ -345,6 +387,15 @@ int wborder(WINDOW *win,
     if (!bl) bl = '+';
     if (!br) br = '+';
 
+    ls = acs_translate(ls);
+    rs = acs_translate(rs);
+    ts = acs_translate(ts);
+    bs = acs_translate(bs);
+    tl = acs_translate(tl);
+    tr = acs_translate(tr);
+    bl = acs_translate(bl);
+    br = acs_translate(br);
+
     int height = win->maxy;
     int width = win->maxx;
 
@@ -426,6 +477,7 @@ int whline(WINDOW *win, char ch, int n) {
         return -1;
     if (!ch)
         ch = '-';
+    ch = acs_translate(ch);
 
     char buf[2] = { ch, 0 };
     int drawn = 0;
@@ -459,6 +511,7 @@ int wvline(WINDOW *win, char ch, int n) {
         return -1;
     if (!ch)
         ch = '|';
+    ch = acs_translate(ch);
 
     char buf[2] = { ch, 0 };
     int drawn = 0;

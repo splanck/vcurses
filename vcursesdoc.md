@@ -170,6 +170,23 @@ whline(win, '-', 10); /* horizontal line */
 wvline(win, '|', 5);  /* vertical line */
 ```
 
+### ACS line drawing characters
+
+Mnemonic constants such as `ACS_HLINE` and `ACS_VLINE` map to the ASCII
+characters used for simple boxes. They can be passed to `box`, `wborder`,
+`whline` or `wvline`:
+
+```c
+box(win, ACS_VLINE, ACS_HLINE);
+wborder(win, ACS_VLINE, ACS_VLINE,
+        ACS_HLINE, ACS_HLINE,
+        ACS_ULCORNER, ACS_URCORNER,
+        ACS_LLCORNER, ACS_LRCORNER);
+```
+
+The library translates these values to printable characters so programs work
+even without Unicode line drawing support.
+
 ## Inserting and deleting characters
 
 Characters and strings can be inserted before the cursor using
