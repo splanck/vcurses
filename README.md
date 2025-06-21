@@ -54,6 +54,11 @@ waddstr(win, "reversed\n");
 wattroff(win, A_REVERSE);
 ```
 
+Each window also stores a background attribute used when blanks are inserted
+by erasing or scrolling.  Set it with `wbkgdset(win, attr)` (or `bkgdset` for
+`stdscr`). Calling `wbkgd(win, attr)` updates the background and clears the
+window using the new attribute.
+
 ## Input timeouts
 
 `wgetch()` can wait for input in three ways:

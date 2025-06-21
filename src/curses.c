@@ -89,6 +89,24 @@ int wcolor_set(WINDOW *win, short pair, void *opts) {
 
 int color_set(short pair, void *opts) { return wcolor_set(stdscr, pair, opts); }
 
+int wbkgdset(WINDOW *win, int attrs) {
+    if (!win)
+        return -1;
+    win->bkgd = attrs;
+    return 0;
+}
+
+int bkgdset(int attrs) { return wbkgdset(stdscr, attrs); }
+
+int wbkgd(WINDOW *win, int attrs) {
+    if (!win)
+        return -1;
+    win->bkgd = attrs;
+    return wclear(win);
+}
+
+int bkgd(int attrs) { return wbkgd(stdscr, attrs); }
+
 int move(int y, int x) {
     return wmove(stdscr, y, x);
 }

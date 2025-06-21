@@ -41,12 +41,28 @@ START_TEST(test_erase_wrapper)
 }
 END_TEST
 
+START_TEST(test_werase_uses_bkgd)
+{
+    WINDOW *saved = stdscr;
+    stdscr = newwin(1,1,0,0);
+    wbkgdset(stdscr, A_REVERSE);
+    stdscr->attr = 0;
+    ck_assert_int_eq(werase(stdscr), 0);
+    int attr;
+    _vc_screen_get_cell(0,0,NULL,&attr);
+    ck_assert_int_eq(attr, A_REVERSE);
+    delwin(stdscr);
+    stdscr = saved;
+}
+END_TEST
+
 Suite *erase_suite(void)
 {
     Suite *s = suite_create("erase");
     TCase *tc = tcase_create("core");
     tcase_add_test(tc, test_werase_clears_window);
     tcase_add_test(tc, test_erase_wrapper);
+    tcase_add_test(tc, test_werase_uses_bkgd);
     suite_add_tcase(s, tc);
     return s;
 }
