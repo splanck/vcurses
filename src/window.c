@@ -445,40 +445,15 @@ int vline(char ch, int n) {
     return wvline(stdscr, ch, n);
 }
 
-extern void _vc_screen_refresh_region(int top, int left, int height, int width);
+extern int wnoutrefresh(WINDOW *win);
+extern int doupdate(void);
 
 int wrefresh(WINDOW *win) {
     if (!win)
         return -1;
-    if (win->clearok) {
-        extern void _vc_screen_free(void);
-        _vc_screen_free();
-        clear();
-        win->clearok = 0;
-    }
-    if (!win->dirty) {
-        _vc_screen_refresh_region(win->begy, win->begx, win->maxy, win->maxx);
-    } else {
-        int start = -1;
-        for (int r = 0; r < win->maxy; ++r) {
-            if (win->dirty[r]) {
-                if (start == -1)
-                    start = r;
-            } else if (start != -1) {
-                _vc_screen_refresh_region(win->begy + start, win->begx,
-                                         r - start, win->maxx);
-                memset(&win->dirty[start], 0, (size_t)(r - start));
-                start = -1;
-            }
-        }
-        if (start != -1) {
-            _vc_screen_refresh_region(win->begy + start, win->begx,
-                                     win->maxy - start, win->maxx);
-            memset(&win->dirty[start], 0, (size_t)(win->maxy - start));
-        }
-    }
-    printf("\x1b[%d;%dH", win->begy + win->cury + 1, win->begx + win->curx + 1);
-    return fflush(stdout);
+    if (wnoutrefresh(win) == -1)
+        return -1;
+    return doupdate();
 }
 
 /* erase a window's contents without forcing a terminal clear */

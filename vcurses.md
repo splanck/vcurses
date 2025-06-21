@@ -45,9 +45,16 @@ int clear(void);
 int clrtobot(void);
 int clrtoeol(void);
 int refresh(void);
+int wnoutrefresh(WINDOW *win);
+int noutrefresh(void);
+int doupdate(void);
 ```
 
-These helpers manipulate the virtual screen buffer and update the physical display when `refresh()` is called.
+These helpers manipulate the virtual screen buffer. `wnoutrefresh()` queues
+changes without drawing them so multiple windows can be updated before
+calling `doupdate()` to refresh the terminal. `noutrefresh()` is a wrapper
+for `stdscr`. `wrefresh(win)` simply performs `wnoutrefresh(win)` followed
+by `doupdate()`.
 
 ### Terminal modes
 

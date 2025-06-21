@@ -89,7 +89,10 @@ visual flash using ANSI escape codes when supported.
 
 `refresh()` redraws the entire screen from the internal buffer. Use
 `wrefresh(win)` to update only a specific window when you don't need to
-repaint everything.
+repaint everything. To batch draws call `wnoutrefresh(win)` for each
+window then `doupdate()` once to flush all queued regions.
+`wrefresh(win)` is equivalent to `wnoutrefresh(win)` followed by
+`doupdate()`. A convenience wrapper `noutrefresh()` targets `stdscr`.
 
 If the terminal contents become corrupted, `touchwin(win)` or
 `wtouchln(win, line, count, 1)` mark regions of a window as dirty so the next
