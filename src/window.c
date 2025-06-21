@@ -215,6 +215,40 @@ int waddstr(WINDOW *win, const char *str) {
     return 0;
 }
 
+int waddnstr(WINDOW *win, const char *str, int n) {
+    if (!win || !str)
+        return -1;
+    if (n < 0)
+        n = (int)strlen(str);
+    size_t len = strnlen(str, (size_t)n);
+
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int row = win->pad_y + win->cury;
+        int col = win->pad_x + win->curx;
+        for (size_t i = 0; i < len && row < root->maxy && col < root->maxx; ++i) {
+            root->pad_buf[row][col] = (vcchar_t)str[i];
+            root->pad_attr[row][col] = win->attr;
+            col++;
+        }
+        win->curx += (int)len;
+        mark_dirty(win, win->cury, 1);
+    } else {
+        char *buf = malloc(len + 1);
+        if (!buf)
+            return -1;
+        memcpy(buf, str, len);
+        buf[len] = '\0';
+        int row = win->begy + win->cury;
+        int col = win->begx + win->curx;
+        _vc_screen_puts(row, col, buf, win->attr);
+        free(buf);
+        win->curx += (int)len;
+        mark_dirty(win, win->cury, 1);
+    }
+    return 0;
+}
+
 int waddch(WINDOW *win, char ch) {
     char buf[2];
     buf[0] = ch;
@@ -272,6 +306,20 @@ int mvwaddstr(WINDOW *win, int y, int x, const char *str) {
     if (wmove(win, y, x) == -1)
         return -1;
     return waddstr(win, str);
+}
+
+int mvwaddnstr(WINDOW *win, int y, int x, const char *str, int n) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return waddnstr(win, str, n);
+}
+
+int addnstr(const char *str, int n) {
+    return waddnstr(stdscr, str, n);
+}
+
+int mvaddnstr(int y, int x, const char *str, int n) {
+    return mvwaddnstr(stdscr, y, x, str, n);
 }
 
 int mvwprintw(WINDOW *win, int y, int x, const char *fmt, ...) {
