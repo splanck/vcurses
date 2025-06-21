@@ -73,6 +73,7 @@ window using the new attribute.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
 - `set_escdelay(ms)` adjusts how long `wgetch()` waits after an ESC
   character before deciding it's a lone escape key.
+- `notimeout(win, true)` bypasses the escape delay for that window.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached. Basic formatted input is also provided by

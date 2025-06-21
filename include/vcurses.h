@@ -23,6 +23,7 @@ typedef struct window {
     int bottom_margin; /* bottom scrolling margin */
     int clearok; /* full screen clear requested */
     int delay; /* input delay in ms (-1 blocking) */
+    int notimeout; /* disable ESC delay */
     int attr; /* current attributes */
     int bkgd; /* background attributes */
     int is_pad; /* is this a pad */

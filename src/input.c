@@ -40,10 +40,11 @@ static int read_number(int *out, char *delim)
 
 static int esc_delay = 50;
 
-static int parse_escape_sequence(void) {
+static int parse_escape_sequence(WINDOW *win) {
     char ch;
     struct pollfd pfd = { .fd = STDIN_FILENO, .events = POLLIN };
-    if (poll(&pfd, 1, esc_delay) <= 0)
+    int delay = win && win->notimeout ? 0 : esc_delay;
+    if (poll(&pfd, 1, delay) <= 0)
         return 27;
     if (read(STDIN_FILENO, &ch, 1) != 1)
         return 27;
@@ -202,7 +203,7 @@ int wgetch(WINDOW *win) {
 
     if (win->keypad_mode) {
         if (c == '\x1b')
-            return parse_escape_sequence();
+            return parse_escape_sequence(win);
         if (c == '\x7f' || c == '\b')
             return KEY_BACKSPACE;
         if (c == '\n' || c == '\r')
@@ -345,6 +346,13 @@ int timeout(int delay) {
 
 int nodelay(WINDOW *win, bool bf) {
     return wtimeout(win, bf ? 0 : -1);
+}
+
+int notimeout(WINDOW *win, bool bf) {
+    if (!win)
+        return -1;
+    win->notimeout = bf ? 1 : 0;
+    return 0;
 }
 
 int halfdelay(int tenths) {

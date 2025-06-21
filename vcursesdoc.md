@@ -46,6 +46,25 @@ constants defined in `<curses.h>`.  These include:
 
 Regular printable characters are returned unchanged.
 
+## Input timeouts
+
+Input waiting behaviour can be configured per window.  The helpers
+below control whether `wgetch()` blocks and how it interprets escape
+sequences:
+
+```c
+int nodelay(WINDOW *win, bool bf);   /* true for non-blocking */
+int wtimeout(WINDOW *win, int ms);   /* delay in milliseconds */
+int timeout(int ms);                  /* stdscr wrapper */
+int halfdelay(int tenths);           /* sets cbreak timeout */
+int notimeout(WINDOW *win, bool bf); /* disable ESC delay */
+int set_escdelay(int ms);            /* ESC detection delay */
+```
+
+When `notimeout` is enabled, `wgetch()` does not pause after an ESC
+character before returning it.  Otherwise the delay from `set_escdelay`
+is used to decide whether an escape sequence is pending.
+
 ## Formatted output
 
 Use `wprintw(win, fmt, ...)` to print formatted text directly into a window.
