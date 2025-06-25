@@ -237,3 +237,7 @@ selected with `set_term(scr)` which returns the previously active one. Each
 screen stores its own copy of `stdscr` and associated backing buffers so
 switching screens swaps the visible contents without redrawing from scratch.
 
+## License
+
+vcurses is distributed under the terms of the BSD 2-Clause
+"Simplified" License. See [LICENSE](LICENSE) for details.
