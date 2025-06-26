@@ -73,6 +73,7 @@ window using the new attribute.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
 - `set_escdelay(ms)` adjusts how long `wgetch()` waits after an ESC
   character before deciding it's a lone escape key.
+- The `ESCDELAY` environment variable can set this delay at startup.
 - `mouseinterval(ms)` sets the press/release interval used for clicks.
 - `notimeout(win, true)` bypasses the escape delay for that window.
 - `meta(win, true)` causes `wgetch()` to return 8-bit input values

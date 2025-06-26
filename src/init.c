@@ -82,6 +82,7 @@ static SCREEN *alloc_screen(void) {
 
 SCREEN *newterm(const char *type, FILE *outf, FILE *inf) {
     (void)type; (void)outf; (void)inf;
+    vc_init();
     if (ensure_term_initialized() == -1)
         return NULL;
     return alloc_screen();
