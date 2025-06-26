@@ -73,10 +73,12 @@ window using the new attribute.
 - `halfdelay(tenths)` sets cbreak mode and applies a timeout on `stdscr`.
 - `set_escdelay(ms)` adjusts how long `wgetch()` waits after an ESC
   character before deciding it's a lone escape key.
+- `mouseinterval(ms)` sets the press/release interval used for clicks.
 - `notimeout(win, true)` bypasses the escape delay for that window.
 - `meta(win, true)` causes `wgetch()` to return 8-bit input values
   instead of masking them to 7 bits.
 - `ungetch(ch)` pushes a character back so the next `getch` returns it.
+- `ungetmouse(&ev)` queues a mouse event and pushes `KEY_MOUSE`.
 - `flushinp()` discards unread input and pending mouse events.
 Use `getnstr()` or `wgetnstr()` to stop reading a string once a fixed
 length has been reached. Basic formatted input is also provided by
@@ -164,6 +166,8 @@ happens `wgetch()` will return `KEY_RESIZE` so applications can react.
 
 Mouse events can be enabled with `mousemask()` and read with `getmouse()` when
 `wgetch()` returns `KEY_MOUSE`.
+Call `mouseinterval(ms)` to adjust the timeout used for detecting clicks.
+Use `ungetmouse(&event)` to push a pending mouse event onto the queue.
 
 ## Window coordinate macros
 

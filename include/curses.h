@@ -186,6 +186,8 @@ typedef struct {
 
 mmask_t mousemask(mmask_t newmask, mmask_t *oldmask);
 int getmouse(MEVENT *event);
+int mouseinterval(int ms);
+int ungetmouse(const MEVENT *event);
 
 /* Special key definitions */
 #define KEY_UP     0x101
