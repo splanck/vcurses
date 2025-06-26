@@ -911,6 +911,45 @@ int mvinsstr(int y, int x, const char *str)
     return mvwinsstr(stdscr, y, x, str);
 }
 
+int winch(WINDOW *win)
+{
+    if (!win)
+        return -1;
+    char ch = ' ';
+    int attr = win->attr;
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int rr = win->pad_y + win->cury;
+        int cc = win->pad_x + win->curx;
+        if (rr >= root->maxy || cc >= root->maxx)
+            return -1;
+#ifdef VCURSES_WIDE
+        ch = (char)root->pad_buf[rr][cc];
+#else
+        ch = root->pad_buf[rr][cc];
+#endif
+        attr = root->pad_attr[rr][cc];
+    } else {
+        if (_vc_screen_get_cell(win->begy + win->cury,
+                               win->begx + win->curx,
+                               &ch, &attr) == -1)
+            return -1;
+    }
+    return attr | (unsigned char)ch;
+}
+
+int mvinch(int y, int x)
+{
+    return mvwinch(stdscr, y, x);
+}
+
+int mvwinch(WINDOW *win, int y, int x)
+{
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return winch(win);
+}
+
 int winsdelln(WINDOW *win, int n)
 {
     if (!win || n == 0)
