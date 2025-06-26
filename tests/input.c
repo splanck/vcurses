@@ -167,6 +167,28 @@ START_TEST(test_flushinp_drops_mouse)
 }
 END_TEST
 
+START_TEST(test_ungetmouse_queues_event)
+{
+    MEVENT ev = { .id = 0, .x = 3, .y = 4, .z = 0, .bstate = BUTTON1_PRESSED };
+    ungetmouse(&ev);
+    WINDOW *w = newwin(1,1,0,0);
+    ck_assert_int_eq(wgetch(w), KEY_MOUSE);
+    MEVENT out;
+    ck_assert_int_eq(getmouse(&out), 0);
+    ck_assert_int_eq(out.x, ev.x);
+    ck_assert_int_eq(out.y, ev.y);
+    ck_assert_int_eq(out.bstate, ev.bstate);
+    delwin(w);
+}
+END_TEST
+
+START_TEST(test_mouseinterval_returns_previous)
+{
+    ck_assert_int_eq(mouseinterval(20), 0);
+    ck_assert_int_eq(mouseinterval(5), 20);
+}
+END_TEST
+
 Suite *input_suite(void)
 {
     Suite *s = suite_create("input");
@@ -184,6 +206,8 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_meta_returns_8bit);
     tcase_add_test(tc, test_flushinp_clears_queue);
     tcase_add_test(tc, test_flushinp_drops_mouse);
+    tcase_add_test(tc, test_ungetmouse_queues_event);
+    tcase_add_test(tc, test_mouseinterval_returns_previous);
     suite_add_tcase(s, tc);
     return s;
 }

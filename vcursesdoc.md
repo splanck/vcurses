@@ -32,6 +32,9 @@ getnstr(buf, 3); /* reads up to three characters */
 Characters may be placed back onto the input stream using `ungetch`.
 The next call to `getch` or `wgetch` will return the pushed value
 instead of reading from the terminal.
+Mouse events can be queued with `ungetmouse(&me)` so the next
+`wgetch()` returns `KEY_MOUSE` and `getmouse()` retrieves the
+provided event.
 `flushinp()` clears any queued input, including mouse events.
 
 ## Key codes
@@ -96,6 +99,7 @@ int timeout(int ms);                  /* stdscr wrapper */
 int halfdelay(int tenths);           /* sets cbreak timeout */
 int notimeout(WINDOW *win, bool bf); /* disable ESC delay */
 int set_escdelay(int ms);            /* ESC detection delay */
+int mouseinterval(int ms);           /* click timeout */
 int meta(WINDOW *win, bool bf);      /* return 8-bit input */
 ```
 
@@ -207,7 +211,9 @@ colors when output is refreshed.
 
 Enable mouse reporting by calling `mousemask()` with the desired button masks.
 When keypad mode is active, `wgetch()` returns `KEY_MOUSE` whenever a supported
-mouse event occurs. Retrieve the event details with `getmouse()`:
+mouse event occurs. The interval for detecting clicks can be configured with
+`mouseinterval(ms)`. Retrieve queued events with `getmouse()` or push one with
+`ungetmouse()`:
 
 ```c
 MEVENT me;

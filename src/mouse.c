@@ -1,9 +1,12 @@
 #include "curses.h"
 #include <stdio.h>
 
+extern int ungetch(int);
+
 static mmask_t current_mask = 0;
 static MEVENT queued_event;
 static int event_pending = 0;
+static int click_interval = 0;
 
 mmask_t mousemask(mmask_t newmask, mmask_t *oldmask)
 {
@@ -46,4 +49,23 @@ int getmouse(MEVENT *event)
 void _vc_mouse_flush_events(void)
 {
     event_pending = 0;
+}
+
+int mouseinterval(int ms)
+{
+    int old = click_interval;
+    if (ms < 0)
+        ms = 0;
+    click_interval = ms;
+    return old;
+}
+
+int ungetmouse(const MEVENT *event)
+{
+    if (!event)
+        return -1;
+    queued_event = *event;
+    event_pending = 1;
+    ungetch(KEY_MOUSE);
+    return 0;
 }
