@@ -134,6 +134,9 @@ int winsstr(WINDOW *win, const char *str);
 int mvwinsstr(WINDOW *win, int y, int x, const char *str);
 int insstr(const char *str);
 int mvinsstr(int y, int x, const char *str);
+int winch(WINDOW *win);
+int mvinch(int y, int x);
+int mvwinch(WINDOW *win, int y, int x);
 int copywin(WINDOW *src, WINDOW *dst,
             int sminrow, int smincol,
             int dminrow, int dmincol,
