@@ -48,6 +48,8 @@ int wmove(WINDOW *win, int y, int x);
 int move(int y, int x);
 int waddch(WINDOW *win, char ch);
 int addch(char ch);
+int wechochar(WINDOW *win, char ch);
+int echochar(char ch);
 int addstr(const char *str);
 int addnstr(const char *str, int n);
 int waddstr(WINDOW *win, const char *str);

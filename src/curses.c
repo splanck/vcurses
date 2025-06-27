@@ -119,6 +119,10 @@ int addch(char ch) {
     return waddch(stdscr, ch);
 }
 
+int echochar(char ch) {
+    return wechochar(stdscr, ch);
+}
+
 int mvaddch(int y, int x, char ch) {
     return mvwaddch(stdscr, y, x, ch);
 }

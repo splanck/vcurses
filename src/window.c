@@ -364,6 +364,14 @@ int wprintw(WINDOW *win, const char *fmt, ...) {
     return r;
 }
 
+int wechochar(WINDOW *win, char ch) {
+    if (!win)
+        return -1;
+    if (waddch(win, ch) == -1)
+        return -1;
+    return wrefresh(win);
+}
+
 int scrollok(WINDOW *win, bool bf) {
     if (!win)
         return -1;
