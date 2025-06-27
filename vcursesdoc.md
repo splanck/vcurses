@@ -173,6 +173,16 @@ waddnstr(w, "abcdef", 3);       /* prints "abc"    */
 mvwaddnstr(w, 0, 2, "xyz", 5); /* prints "xy"     */
 ```
 
+### Echoing characters
+
+`wechochar(win, ch)` writes `ch` to `win` and immediately refreshes the
+affected area. `echochar(ch)` performs the same operation on `stdscr`.
+
+```c
+wechochar(win, 'X');
+echochar('Y');
+```
+
 ## Color customization
 
 Call `start_color()` to enable color handling. The RGB components of the
