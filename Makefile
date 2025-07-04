@@ -1,6 +1,6 @@
 	CC ?= cc
 AR ?= ar
-CFLAGS ?= -Iinclude -Wall -Wextra -fPIC
+CFLAGS ?= -Iinclude -Wall -Wextra -fPIC -DVCURSES_WIDE
 BUILD := build
 LIB := libvcurses.a
 SRCS := src/vcurses.c src/init.c src/curses.c src/input.c src/keyname.c \

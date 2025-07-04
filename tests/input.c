@@ -105,6 +105,27 @@ START_TEST(test_getnstr_wrapper)
 }
 END_TEST
 
+#ifdef VCURSES_WIDE
+START_TEST(test_wgetn_wstr_limits_length)
+{
+    WINDOW *w = newwin(1,1,0,0);
+    unget_wch(L'\n');
+    unget_wch(L'c');
+    unget_wch(L'b');
+    unget_wch(L'a');
+    wchar_t buf[3];
+    ck_assert_int_eq(wgetn_wstr(w, buf, 2), 0);
+    ck_assert_int_eq(buf[0], L'a');
+    ck_assert_int_eq(buf[1], L'b');
+    ck_assert_int_eq(buf[2], L'\0');
+    nodelay(w, true);
+    wchar_t wc;
+    ck_assert_int_eq(wget_wch(w, &wc), -1);
+    delwin(w);
+}
+END_TEST
+#endif
+
 START_TEST(test_keypad_translates_backspace)
 {
     WINDOW *w = newwin(1,1,0,0);
@@ -200,6 +221,9 @@ Suite *input_suite(void)
     tcase_add_test(tc, test_resize_event);
     tcase_add_test(tc, test_wgetnstr_limits_length);
     tcase_add_test(tc, test_getnstr_wrapper);
+#ifdef VCURSES_WIDE
+    tcase_add_test(tc, test_wgetn_wstr_limits_length);
+#endif
     tcase_add_test(tc, test_keypad_translates_backspace);
     tcase_add_test(tc, test_keypad_translates_enter);
     tcase_add_test(tc, test_meta_masks_high_bit);

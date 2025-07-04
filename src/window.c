@@ -289,6 +289,71 @@ int add_wch(wchar_t wch) {
     return wadd_wch(stdscr, wch);
 }
 
+#ifdef VCURSES_WIDE
+int waddwstr(WINDOW *win, const wchar_t *wstr) {
+    return waddnwstr(win, wstr, -1);
+}
+
+int waddnwstr(WINDOW *win, const wchar_t *wstr, int n) {
+    if (!win || !wstr)
+        return -1;
+    if (n < 0)
+        n = (int)wcslen(wstr);
+    if (win->is_pad) {
+        WINDOW *root = pad_root(win);
+        int row = win->pad_y + win->cury;
+        int col = win->pad_x + win->curx;
+        for (int i = 0; i < n && row < root->maxy && col < root->maxx; ++i) {
+            root->pad_buf[row][col] = wstr[i];
+            root->pad_attr[row][col] = win->attr;
+            col++;
+        }
+        win->curx += n;
+        mark_dirty(win, win->cury, 1);
+        return 0;
+    }
+    mbstate_t st = {0};
+    char mb[MB_LEN_MAX + 1];
+    for (int i = 0; i < n; ++i) {
+        size_t m = wcrtomb(mb, wstr[i], &st);
+        if (m == (size_t)-1)
+            return -1;
+        mb[m] = '\0';
+        if (waddstr(win, mb) == -1)
+            return -1;
+    }
+    return 0;
+}
+
+int addwstr(const wchar_t *wstr) {
+    return waddwstr(stdscr, wstr);
+}
+
+int addnwstr(const wchar_t *wstr, int n) {
+    return waddnwstr(stdscr, wstr, n);
+}
+
+int mvwaddwstr(WINDOW *win,int y,int x,const wchar_t *wstr) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return waddwstr(win, wstr);
+}
+
+int mvwaddnwstr(WINDOW *win,int y,int x,const wchar_t *wstr,int n) {
+    if (wmove(win, y, x) == -1)
+        return -1;
+    return waddnwstr(win, wstr, n);
+}
+
+int mvaddwstr(int y,int x,const wchar_t *wstr) {
+    return mvwaddwstr(stdscr, y, x, wstr);
+}
+
+int mvaddnwstr(int y,int x,const wchar_t *wstr,int n) {
+    return mvwaddnwstr(stdscr, y, x, wstr, n);
+}
+#endif
+
 int mvwaddch(WINDOW *win, int y, int x, char ch) {
     if (wmove(win, y, x) == -1)
         return -1;
