@@ -34,12 +34,28 @@ START_TEST(test_prefresh_returns_zero)
 }
 END_TEST
 
+#ifdef VCURSES_WIDE
+START_TEST(test_waddwstr_pad)
+{
+    WINDOW *p = newpad(1,3);
+    wchar_t text[] = L"ab";
+    ck_assert_int_eq(waddwstr(p, text), 0);
+    ck_assert_int_eq(p->pad_buf[0][0], text[0]);
+    ck_assert_int_eq(p->pad_buf[0][1], text[1]);
+    delwin(p);
+}
+END_TEST
+#endif
+
 Suite *pad_suite(void)
 {
     Suite *s = suite_create("pad");
     TCase *tc = tcase_create("core");
     tcase_add_test(tc, test_newpad_basic);
     tcase_add_test(tc, test_subpad_offsets);
+#ifdef VCURSES_WIDE
+    tcase_add_test(tc, test_waddwstr_pad);
+#endif
     tcase_add_test(tc, test_prefresh_returns_zero);
     suite_add_tcase(s, tc);
     return s;

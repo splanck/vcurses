@@ -78,6 +78,20 @@ int wgetstr(WINDOW *win, char *buf);
 int getstr(char *buf);
 int wgetnstr(WINDOW *win, char *buf, int n);
 int getnstr(char *buf, int n);
+#ifdef VCURSES_WIDE
+int waddwstr(WINDOW *win, const wchar_t *wstr);
+int waddnwstr(WINDOW *win, const wchar_t *wstr, int n);
+int addwstr(const wchar_t *wstr);
+int addnwstr(const wchar_t *wstr, int n);
+int mvwaddwstr(WINDOW *win,int y,int x,const wchar_t *wstr);
+int mvwaddnwstr(WINDOW *win,int y,int x,const wchar_t *wstr,int n);
+int mvaddwstr(int y,int x,const wchar_t *wstr);
+int mvaddnwstr(int y,int x,const wchar_t *wstr,int n);
+int wget_wstr(WINDOW *win, wchar_t *buf);
+int wgetn_wstr(WINDOW *win, wchar_t *buf, int n);
+int get_wstr(wchar_t *buf);
+int getn_wstr(wchar_t *buf, int n);
+#endif
 int wscanw(WINDOW *win, const char *fmt, ...);
 int scanw(const char *fmt, ...);
 int mvwscanw(WINDOW *win, int y, int x, const char *fmt, ...);

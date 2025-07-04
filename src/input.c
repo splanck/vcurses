@@ -5,6 +5,7 @@
 #include <wchar.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <limits.h>
 
 /* mouse event queue helper */
 extern void _vc_mouse_push_event(mmask_t bstate, int x, int y);
@@ -335,6 +336,52 @@ int getstr(char *buf) {
 int getnstr(char *buf, int n) {
     return wgetnstr(stdscr, buf, n);
 }
+
+#ifdef VCURSES_WIDE
+int wget_wstr(WINDOW *win, wchar_t *buf) {
+    return wgetn_wstr(win, buf, INT_MAX);
+}
+
+int wgetn_wstr(WINDOW *win, wchar_t *buf, int n) {
+    if (!win || !buf || n <= 0)
+        return -1;
+
+    int ch;
+    int count = 0;
+    wchar_t wc = 0;
+
+    while (count < n && (ch = wget_wch(win, &wc)) != -1) {
+        if ((ch == 0 && (wc == L'\n' || wc == L'\r')) || ch == KEY_ENTER) {
+            buf[count] = L'\0';
+            return 0;
+        }
+        buf[count++] = ch == 0 ? wc : (wchar_t)ch;
+    }
+
+    if (ch == -1)
+        return -1;
+
+    buf[count] = L'\0';
+
+    if (count == n) {
+        while ((ch = wget_wch(win, &wc)) != -1) {
+            if ((ch == 0 && (wc == L'\n' || wc == L'\r')) || ch == KEY_ENTER)
+                break;
+        }
+        if (ch == -1)
+            return -1;
+    }
+    return 0;
+}
+
+int get_wstr(wchar_t *buf) {
+    return wget_wstr(stdscr, buf);
+}
+
+int getn_wstr(wchar_t *buf, int n) {
+    return wgetn_wstr(stdscr, buf, n);
+}
+#endif
 
 int keypad(WINDOW *win, bool yes) {
     if (!win)
